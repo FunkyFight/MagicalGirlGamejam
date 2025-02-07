@@ -5,7 +5,6 @@ using UnityEngine.InputSystem;
 
 public class PlayerController : MonoBehaviour
 {
-
     [Header("Movement Settings")]
     [SerializeField] private float moveSpeed = 5f;
     [SerializeField] private float jumpHeight = 5f;
@@ -28,7 +27,10 @@ public class PlayerController : MonoBehaviour
     [SerializeField] private int maxHalfTime = 7;
     [SerializeField] private float halfGravityCoef = 0.5f;
     private int halfTime = 0;
-    private float halfEpsilon = 0.1f;
+    private float halfEpsilon = 0.3f;
+
+    [Header("Variable Jump Height Settings")]
+    [SerializeField] private float jumpCutMultiplier = 0.5f; // Multiplie la vélocité verticale lors d'un relâchement précoce
 
     // Components
     private Rigidbody2D rbody;
@@ -46,24 +48,33 @@ public class PlayerController : MonoBehaviour
 
     public void Jump(InputAction.CallbackContext context)
     {
-        if (context.phase != InputActionPhase.Started) return;
-
-        bool canJump = context.ReadValueAsButton() && (IsGrounded() || coyoteBuffer > 0);
-        if (!canJump)
+        // Début du saut
+        if (context.phase == InputActionPhase.Started)
         {
-            jumpBuffer = jumpBufferTime;
-            return;
-        }
+            bool canJump = IsGrounded() || coyoteBuffer > 0;
+            if (!canJump)
+            {
+                jumpBuffer = jumpBufferTime;
+                return;
+            }
 
-        _Jump();
+            _Jump();
+        }
+        // Relâchement du bouton de saut pour un variable jump height
+        else if (context.phase == InputActionPhase.Canceled)
+        {
+            if (rbody.linearVelocityY > 0)
+            {
+                rbody.linearVelocityY *= jumpCutMultiplier;
+            }
+        }
     }
 
     void _Jump()
     {
         rbody.linearVelocityY = jumpHeight;
         isJumping = true;
-        
-        coyoteBuffer = 0; // Reset coyote buffer after jump
+        coyoteBuffer = 0; // Réinitialise le coyote buffer après un saut
         canActivateCoyote = false;
     }
 
@@ -80,46 +91,11 @@ public class PlayerController : MonoBehaviour
         }
     }
 
-    
-
-    /*
-    * Special Movements Functions
-    */
-
-    void HalfJumpGravityPeak()
-    {
-        if(!IsGrounded())
-        {
-            if(halfTime > 0)
-            {
-                halfTime--;
-                if(halfTime == 0)
-                {
-                    rbody.gravityScale = rbody.gravityScale / halfGravityCoef;
-                }
-                return;
-            }
-
-            if(Mathf.Abs(rbody.linearVelocityY) < halfEpsilon)
-            {
-                if(halfTime > 0) return;
-                // Starting half jump gravity peak
-                halfTime = maxHalfTime;
-                rbody.gravityScale = rbody.gravityScale * halfGravityCoef;
-                return;
-            }
-        } else {
-            if(halfTime <= 0) return;
-            halfTime = 0;
-            rbody.gravityScale = rbody.gravityScale / halfGravityCoef;
-        }
-    }
-
     void JumpBuffer()
     {
-        if(jumpBuffer > 0)
+        if (jumpBuffer > 0)
         {
-            if(IsGrounded())
+            if (IsGrounded())
             {
                 jumpBuffer = 0;
                 _Jump();
@@ -152,6 +128,36 @@ public class PlayerController : MonoBehaviour
         }
     }
 
+    void HalfJumpGravityPeak()
+    {
+        Debug.Log(rbody.linearVelocityY);
+        if(!IsGrounded())
+        {
+            if(halfTime > 0)
+            {
+                halfTime--;
+                if(halfTime == 0)
+                {
+                    rbody.gravityScale = rbody.gravityScale / halfGravityCoef;
+                }
+                return;
+            }
+
+            if(Mathf.Abs(rbody.linearVelocityY) < halfEpsilon)
+            {
+                if(halfTime > 0) return;
+                // Starting half jump gravity peak
+                halfTime = maxHalfTime;
+                rbody.gravityScale = rbody.gravityScale * halfGravityCoef;
+                return;
+            }
+        } else {
+            if(halfTime <= 0) return;
+            halfTime = 0;
+            rbody.gravityScale = rbody.gravityScale / halfGravityCoef;
+        }
+    }
+
     void ResetCoyoteJump()
     {
         canActivateCoyote = true;
@@ -177,5 +183,4 @@ public class PlayerController : MonoBehaviour
 
         return false;
     }
-    
 }
