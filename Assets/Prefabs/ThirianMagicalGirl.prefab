@@ -345,7 +345,7 @@ MonoBehaviour:
   xStrength: 2
   wallJumpGraceFrames: 10
   wallJumpCooldownFrames: 10
-  dashStrength: 10
+  dashStrength: 30
   dashDuration: 0.2
   dashCooldown: 0.5
   dashFriction: 0.95
