@@ -5,6 +5,7 @@ using UnityEngine.InputSystem;
 
 public class PlayerController : MonoBehaviour
 {
+
     [Header("Movement Settings")]
     [SerializeField] private float moveSpeed = 5f;
     [SerializeField] private float jumpHeight = 5f;
@@ -130,7 +131,6 @@ public class PlayerController : MonoBehaviour
 
     void HalfJumpGravityPeak()
     {
-        Debug.Log(rbody.linearVelocityY);
         if(!IsGrounded())
         {
             if(halfTime > 0)
