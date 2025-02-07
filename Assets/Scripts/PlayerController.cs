@@ -6,6 +6,7 @@ using UnityEngine.InputSystem;
 public class PlayerController : MonoBehaviour
 {
 
+    [SerializeField] public bool CanMove {get; set;} = true;
     [Header("Movement Settings")]
     [SerializeField] private float moveSpeed = 10f;
     [SerializeField] private float jumpHeight = 14f;
@@ -45,6 +46,8 @@ public class PlayerController : MonoBehaviour
 
     public void Move(InputAction.CallbackContext context)
     {
+        if(!CanMove) return;
+
         Vector2 direction = context.ReadValue<Vector2>();
 
         if (Mathf.Abs(direction.x) > 0.1f)
@@ -60,6 +63,8 @@ public class PlayerController : MonoBehaviour
 
     public void Jump(InputAction.CallbackContext context)
     {
+        if(!CanMove) return;
+
         // Début du saut
         if (context.phase == InputActionPhase.Started)
         {

@@ -5,6 +5,7 @@ using UnityEngine.InputSystem;
 
 public class ThirianController : MonoBehaviour
 {
+    [SerializeField] public bool CanMove {get; set;} = true;
     [Header("Movement Settings")]
     [SerializeField] private float moveSpeed = 10f;
     [SerializeField] private float jumpHeight = 14f;
@@ -67,6 +68,8 @@ public class ThirianController : MonoBehaviour
 
     public void Move(InputAction.CallbackContext context)
     {
+        if(!CanMove) return;
+
         // Si le dash est actif, on ignore les inputs de déplacement pour conserver la vélocité du dash
         if (isDashing)
             return;
@@ -85,6 +88,8 @@ public class ThirianController : MonoBehaviour
 
     public void Jump(InputAction.CallbackContext context)
     {
+        if(!CanMove) return;
+
         // Début du saut
         if (context.phase == InputActionPhase.Started)
         {
@@ -109,6 +114,7 @@ public class ThirianController : MonoBehaviour
 
     void _Jump()
     {
+        
         if (!isStickedOnWall)
         {
             rbody.linearVelocity = new Vector2(rbody.linearVelocity.x, jumpHeight);
@@ -137,6 +143,8 @@ public class ThirianController : MonoBehaviour
 
     public void Dash(InputAction.CallbackContext context)
     {
+        if(!CanMove) return;
+
         if (!context.started)
             return;
 
