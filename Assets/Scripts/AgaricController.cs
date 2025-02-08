@@ -1,4 +1,5 @@
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.InputSystem;
@@ -7,6 +8,7 @@ public class AgaricController : MonoBehaviour
 {
 
     [SerializeField] public bool CanMove {get; set;} = true;
+    [SerializeField] public bool CanJump {get; set;} = true;
     [Header("Movement Settings")]
     [SerializeField] private float moveSpeed = 10f;
     [SerializeField] private float jumpHeight = 14f;
@@ -36,12 +38,30 @@ public class AgaricController : MonoBehaviour
     [Header("Variable Jump Height Settings")]
     [SerializeField] private float jumpCutMultiplier = 0.5f; // Multiplie la vélocité verticale lors d'un relâchement précoce
 
+     /*saut Champi variable*/
+    [Header("SautChampi Settings")]
+    [SerializeField] private float highJumpChampi = 2f;
+    [SerializeField] private float delayBeforeJumpChamp = 1f;  
+    private bool isChampiDelayActive = false;
+    //test pour changer la couleur
+    private SpriteRenderer spriteRenderer;
+    private Color initialColor;
+
+    [Header("PlaneChampi Settings")]
+    [SerializeField] private float planeChampiGravityScale = 0.3f;
+    [SerializeField] private float planeChampiHorizontalSpeed = 5f;
+    private bool isPlane = false;
+     private float graviteNormal;
+
     // Components
     private Rigidbody2D rbody;
 
     void Start()
     {
         rbody = GetComponent<Rigidbody2D>();
+        spriteRenderer = GetComponent<SpriteRenderer>();
+        initialColor = spriteRenderer.color;
+        graviteNormal = rbody.gravityScale;
     }
 
     public void Move(InputAction.CallbackContext context)
@@ -64,6 +84,8 @@ public class AgaricController : MonoBehaviour
     public void Jump(InputAction.CallbackContext context)
     {
         if(!CanMove) return;
+        if(!CanJump) return;
+        if (isChampiDelayActive) return;
 
         // Début du saut
         if (context.phase == InputActionPhase.Started)
@@ -203,7 +225,51 @@ public class AgaricController : MonoBehaviour
     /* test abality 1*/
 
     public void SautChampi(InputAction.CallbackContext context) 
+    {   
+        if (!CanMove) return;
+        if (!CanJump) return;
+        if (context.phase == InputActionPhase.Started)
+        {   
+            rbody.linearVelocityY = 0;
+            isChampiDelayActive = true;
+            spriteRenderer.color = Color.red;
+            StartCoroutine(DelaySautChampi());
+            
+        } else if (context.phase == InputActionPhase.Canceled) 
+        {
+            spriteRenderer.color = initialColor;
+        }
+    }
+    private IEnumerator DelaySautChampi()
     {
-        Debug.Log("active");
+        yield return new WaitForSeconds(delayBeforeJumpChamp);
+        if (IsGrounded()) 
+        {
+            rbody.linearVelocity = new Vector2(rbody.linearVelocity.x, jumpHeight * highJumpChampi);
+            isJumping = true;
+        }
+        isChampiDelayActive = false;
+    }
+
+
+    /*test abality 2*/
+    public void PlaneChampi(InputAction.CallbackContext context)
+    {   
+        if (context.phase == InputActionPhase.Started)
+        {
+            if (!IsGrounded()) 
+            {   
+                isPlane = true;
+                spriteRenderer.color = Color.blue;
+                rbody.gravityScale = planeChampiGravityScale;
+            }
+        } else if (context.phase == InputActionPhase.Canceled) {
+           spriteRenderer.color = initialColor;
+            if (isPlane)
+            {
+                isPlane = false;
+                rbody.gravityScale = graviteNormal;
+            }
+        }
     }
 }
