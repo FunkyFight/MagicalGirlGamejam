@@ -3,7 +3,7 @@ using UnityEngine;
 public class CameraFollow : MonoBehaviour
 {
     [Header("Camera Settings")]
-    [SerializeField] private Transform target;
+    [SerializeField] public Transform target;
     [SerializeField] public Vector2 offset;
     [SerializeField] public float cameraSize;
     [SerializeField] public float drag;
@@ -17,6 +17,8 @@ public class CameraFollow : MonoBehaviour
     }    
     void Update()
     {
+        if(target == null) return;
+
         Vector3 newPos = new Vector3(target.position.x + offset.x, target.position.y + offset.y, -10);
         transform.position = Vector3.Lerp(transform.position, newPos, drag);
         camera.orthographicSize = Mathf.Lerp(camera.orthographicSize, cameraSize, drag);

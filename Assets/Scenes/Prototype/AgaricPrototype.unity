@@ -424,7 +424,19 @@ MonoBehaviour:
     m_ActionId: 9caa3d8a-6b2f-4e8e-8bad-6ede561bd9be
     m_ActionName: UI/TrackedDeviceOrientation
   - m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 352697428}
+        m_TargetAssemblyTypeName: AgaricController, Assembly-CSharp
+        m_MethodName: SautChampi
+        m_Mode: 0
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
     m_ActionId: fbd67425-122f-4e09-9854-092df9e71799
     m_ActionName: 'Player/Ability1[/Keyboard/a]'
   - m_PersistentCalls:
