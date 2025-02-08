@@ -230,6 +230,7 @@ GameObject:
   - component: {fileID: 2009827267990356041}
   - component: {fileID: 1965876813750928330}
   - component: {fileID: 6497030308322452064}
+  - component: {fileID: 5616540239401138838}
   m_Layer: 0
   m_Name: PlayerTest
   m_TagString: Untagged
@@ -527,3 +528,16 @@ MonoBehaviour:
   maxHalfTime: 5
   halfGravityCoef: 0.5
   jumpCutMultiplier: 0.5
+--- !u!114 &5616540239401138838
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7648592749111488730}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9c93086b5eecb3d4483721cbaa992f9f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  playerManager: {fileID: 0}

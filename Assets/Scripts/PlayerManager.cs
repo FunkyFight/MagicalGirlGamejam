@@ -62,6 +62,7 @@ public class PlayerManager : MonoBehaviour
         }
 
         currentTransformationGameObject = Instantiate(transformationPrefabs[characterIndex], transform);
+        currentTransformationGameObject.GetComponent<PlayerDamageController>().playerManager = this;
 
         // Redéfinition des slots
         leftSlotTransformationIndex = (leftSlotTransformationIndex == characterIndex) ? currentTransformationIndex : leftSlotTransformationIndex;
@@ -99,6 +100,8 @@ public class PlayerManager : MonoBehaviour
         
 
         currentTransformationGameObject = Instantiate(transformationPrefabs[characterIndex], transform);
+
+        currentTransformationGameObject.GetComponent<PlayerDamageController>().playerManager = this;
 
         // Animation blanc -> couleur pour la transition
         SpriteRenderer spriteRenderer = currentTransformationGameObject.GetComponent<SpriteRenderer>();

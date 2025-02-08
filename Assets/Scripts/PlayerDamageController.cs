@@ -3,7 +3,7 @@ using UnityEngine;
 
 public class PlayerDamageController : MonoBehaviour
 {
-    [SerializeField] private PlayerManager playerManager;
+    [SerializeField] public PlayerManager playerManager;
 
     void OnCollisionEnter2D(Collision2D collision)
     {
