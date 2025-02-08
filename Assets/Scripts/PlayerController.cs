@@ -57,7 +57,6 @@ public class PlayerController : MonoBehaviour
         rbody.linearVelocityX = direction.x * moveSpeed;
 
         transform.localScale = new Vector3(lastDirection, 1, 1);
-
     }
 
     public void Jump(InputAction.CallbackContext context)
