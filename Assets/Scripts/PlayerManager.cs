@@ -85,6 +85,11 @@ public class PlayerManager : MonoBehaviour
             return false;
         }
 
+        if(mana <= 0) return false; 
+
+        // Si on est en forme humaine alors peut importe la transformation on repasse d'abord en magical girl
+        if(currentTransformationIndex == 0) characterIndex = 1;
+
         // Sauvegarde des données de mouvement
         // Bug : le joueur pourra avoir un double jump en spammant très vite le saut pour coyote -> sauvegarder les données de coyote etc
         Vector2 lastPlayerPos = currentTransformationGameObject.transform.position;
@@ -114,8 +119,11 @@ public class PlayerManager : MonoBehaviour
         currentTransformationGameObject.GetComponent<Rigidbody2D>().linearVelocity = lastVelocity;
 
         // Redéfinition des slots
-        leftSlotTransformationIndex = (leftSlotTransformationIndex == characterIndex) ? currentTransformationIndex : leftSlotTransformationIndex;
-        rightSlotTransformationIndex = (rightSlotTransformationIndex == characterIndex) ? currentTransformationIndex : rightSlotTransformationIndex;
+        if(currentTransformationIndex != 0) 
+        {
+            leftSlotTransformationIndex = (leftSlotTransformationIndex == characterIndex) ? currentTransformationIndex : leftSlotTransformationIndex;
+            rightSlotTransformationIndex = (rightSlotTransformationIndex == characterIndex) ? currentTransformationIndex : rightSlotTransformationIndex;
+        }
         currentTransformationIndex = characterIndex;
 
         return true;
