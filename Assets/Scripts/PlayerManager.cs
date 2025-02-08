@@ -1,12 +1,22 @@
 using System.Collections.Generic;
+using DG.Tweening;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
 public class PlayerManager : MonoBehaviour
 {
+    [Header("Player Stats")]
+    [SerializeField] private int maxHealth = 3;
+    [SerializeField] private int health = 3;
+
+    [SerializeField] private int maxMana = 100;
+    [SerializeField] private int mana = 100;
+
+
     [Header("Game Mediator")]
     [SerializeField] private GameMediator mediator;
 
+    private ParticleSystem ps;
 
     [Header("Character Transformations")]
     [SerializeField] private List<GameObject> transformationPrefabs;
@@ -17,7 +27,10 @@ public class PlayerManager : MonoBehaviour
     public GameObject currentTransformationGameObject {private set; get;}
 
 
-
+    void Start()
+    {
+        ps = GetComponent<ParticleSystem>();
+    }
 
     void Update()
     {
@@ -78,7 +91,22 @@ public class PlayerManager : MonoBehaviour
 
         Destroy(currentTransformationGameObject);
 
+        // Play particles
+        transform.position = lastPlayerPos; // Teleport this gameobject to lastPlayerPos
+        
+        StartCoroutine(playSwitchParticles(0.1f));
+
+        
+
         currentTransformationGameObject = Instantiate(transformationPrefabs[characterIndex], transform);
+
+        // Animation blanc -> couleur pour la transition
+        SpriteRenderer spriteRenderer = currentTransformationGameObject.GetComponent<SpriteRenderer>();
+        Color originalColor = spriteRenderer.color;
+        spriteRenderer.color = Color.white;
+
+        spriteRenderer.DOColor(originalColor, 1f).SetEase(Ease.OutBack);
+
         currentTransformationGameObject.transform.position = lastPlayerPos;
         currentTransformationGameObject.GetComponent<Rigidbody2D>().linearVelocity = lastVelocity;
 
@@ -98,5 +126,23 @@ public class PlayerManager : MonoBehaviour
     public void OnRightShoulder()
     {
         mediator.SwitchPlayerMagicalGirlTransformation(rightSlotTransformationIndex);
+    }
+
+    public void Damage()
+    {
+        if (currentTransformationIndex == 0) 
+            health--;
+        else 
+            mana = Mathf.FloorToInt(mana * 0.75f);
+
+        if(mana == 0) mediator.SwitchPlayerMagicalGirlTransformation(0);
+        if(health == 0) UnityEngine.SceneManagement.SceneManager.LoadScene(UnityEngine.SceneManagement.SceneManager.GetActiveScene().name);
+    }
+
+    private IEnumerator<object> playSwitchParticles(float duration)
+    {
+        ps.Play();
+        yield return new WaitForSeconds(duration);
+        ps.Stop();
     }
 }
