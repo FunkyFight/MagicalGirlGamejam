@@ -16,7 +16,6 @@ public class PlayerController : MonoBehaviour
     [Header("Collision Settings")]
     [SerializeField] private List<LayerMask> groundLayers;
     [SerializeField] private Transform groundCheck;
-    [SerializeField] private Transform wallCheck;
 
     [Header("Coyote Jump Settings")]
     [SerializeField] private int coyoteTime = 7; // Frames que le joueur dispose pour faire un saut quand il est tombé
