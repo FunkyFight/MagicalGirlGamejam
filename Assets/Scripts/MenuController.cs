@@ -122,7 +122,7 @@ public class MenuController : MonoBehaviour
         AudioClip playButtonClip = playButtonClips[Random.Range(0, playButtonClips.Count)];
         AudioSource.PlayClipAtPoint(playButtonClip, playerController.transform.position);
 
-        musicPlayer.Stop();
+        musicPlayer.DOFade(0f, 4f);
 
         canvasGroup.DOFade(0, 4f).SetEase(Ease.InExpo);
         logoGroup.DOFade(0, 4f).SetEase(Ease.InExpo);
