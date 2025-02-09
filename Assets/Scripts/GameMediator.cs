@@ -23,6 +23,12 @@ public class GameMediator : MonoBehaviour
         if(!successfullyLoaded) return;
         cameraFollow.target = playerManager.currentTransformationGameObject.transform;
 
+        if(!startMenu)
+        {
+            Destroy(menuController.GetComponent<ScreenFade>().fadeCanvas.gameObject);
+            Destroy(menuController.gameObject);
+            musicPlayer.Stop();
+        }
     }
 
 
