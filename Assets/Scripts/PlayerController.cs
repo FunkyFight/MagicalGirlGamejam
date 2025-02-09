@@ -6,9 +6,9 @@ using UnityEngine.InputSystem;
 public class PlayerController : MonoBehaviour
 {
 
-    [SerializeField] public bool CanMove {get; set;} = true;
+    [SerializeField] public bool CanMove = true;
     [Header("Movement Settings")]
-    [SerializeField] private float moveSpeed = 10f;
+    [SerializeField] public float moveSpeed = 10f;
     [SerializeField] private float jumpHeight = 14f;
     private bool isJumping = false;
     private float lastDirection = 1;

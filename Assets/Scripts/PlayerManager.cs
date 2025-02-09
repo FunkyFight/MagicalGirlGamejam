@@ -63,6 +63,7 @@ public class PlayerManager : MonoBehaviour
 
         currentTransformationGameObject = Instantiate(transformationPrefabs[characterIndex], transform);
         currentTransformationGameObject.GetComponent<PlayerDamageController>().playerManager = this;
+        currentTransformationGameObject.transform.position = transform.position;
 
         // Redéfinition des slots
         leftSlotTransformationIndex = (leftSlotTransformationIndex == characterIndex) ? currentTransformationIndex : leftSlotTransformationIndex;

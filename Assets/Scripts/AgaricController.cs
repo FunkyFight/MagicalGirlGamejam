@@ -234,19 +234,20 @@ public class AgaricController : MonoBehaviour
             rbody.linearVelocityY = 0;
             isChampiDelayActive = true;
             spriteRenderer.color = Color.red;
+            CanMove = false;
             StartCoroutine(DelaySautChampi());
-        } else if (context.phase == InputActionPhase.Canceled) 
-        {
-            spriteRenderer.color = initialColor;
-        }  
+        }
     }
+    
     private IEnumerator DelaySautChampi()
     {
         yield return new WaitForSeconds(delayBeforeJumpChamp);
+        CanMove = true;
         if (IsGrounded()) 
         {
             rbody.linearVelocity = new Vector2(rbody.linearVelocity.x, jumpHeight * highJumpChampi);
             isJumping = true;
+            spriteRenderer.color = initialColor;
         }
 
         isChampiDelayActive = false; 

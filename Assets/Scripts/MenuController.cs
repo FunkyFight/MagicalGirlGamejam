@@ -7,7 +7,7 @@ using UnityEngine.InputSystem;
 public class MenuController : MonoBehaviour
 {
 
-
+    [SerializeField] private GameMediator gameMediator;
     [Header("Texts")]
     [SerializeField] private TMP_Text playText;
     [SerializeField] private TMP_Text optionsText;
@@ -20,11 +20,6 @@ public class MenuController : MonoBehaviour
     [Header("Sound Effects / Music")]
     [SerializeField] private List<AudioClip> selectClips;
     [SerializeField] private List<AudioClip> playButtonClips;
-    [SerializeField] private AudioSource musicPlayer;
-
-    [Header("Misc.")]
-    [SerializeField] private CameraFollow cameraFollow;
-    [SerializeField] private PlayerController playerController;
 
     private float floatDuration = 5f;
     private float floatStrength = 25f;
@@ -45,11 +40,12 @@ public class MenuController : MonoBehaviour
         optionsText.transform.DOShakePosition(floatDuration, floatStrength, floatVibrato, 90, false, false).SetLoops(-1).SetEase(Ease.InOutQuad);
         quitText.transform.DOShakePosition(floatDuration, floatStrength, floatVibrato, 90, false, false).SetLoops(-1).SetEase(Ease.InOutQuad);
 
-        cameraFollow.cameraSize = 2;
-        cameraFollow.offset.y = 1.3f;
+        gameMediator.SetCameraSizeAndOffset(2, new Vector2(0, 1.3f));
+        gameMediator.TeleportPlayerAndCameraInstantly(gameMediator.GetPlayerPosition());
+        gameMediator.SetPlayerCanMove(false);
+        gameMediator.SetPlayerSpeed(4);
 
-        playerController.CanMove = false;
-        GetComponent<ScreenFade>().FadeFromBlack(3f, () => {
+        GetComponent<ScreenFade>().FadeFromBlack(5f, () => {
             logoGroup.DOFade(1f, 2f).SetEase(Ease.InOutQuad)
             .OnComplete(() => {
                 canvasGroup.DOFade(1f, 3f).SetEase(Ease.InOutQuad);
@@ -96,7 +92,7 @@ public class MenuController : MonoBehaviour
             lastInputTime = Time.time;
             
             AudioClip selectClip = selectClips[Random.Range(0, selectClips.Count)];
-            AudioSource.PlayClipAtPoint(selectClip, playerController.transform.position);
+            AudioSource.PlayClipAtPoint(selectClip, gameMediator.GetPlayerPosition());
         }
     }
 
@@ -114,26 +110,25 @@ public class MenuController : MonoBehaviour
 
     void Play()
     {
-        cameraFollow.enabled = false;
-        cameraFollow.cameraSize = 4;
-        cameraFollow.offset = new Vector2(0, 1.5f);
+        gameMediator.SetCameraFollowEnabled(false);
+        gameMediator.SetCameraSizeAndOffset(4, new Vector2(0, 1.5f));
         isShown = false;
 
         AudioClip playButtonClip = playButtonClips[Random.Range(0, playButtonClips.Count)];
-        AudioSource.PlayClipAtPoint(playButtonClip, playerController.transform.position);
+        AudioSource.PlayClipAtPoint(playButtonClip, gameMediator.GetPlayerPosition());
 
-        musicPlayer.DOFade(0f, 4f);
+        gameMediator.FadeMusicPlayer(0f, 4f);
 
         canvasGroup.DOFade(0, 4f).SetEase(Ease.InExpo);
         logoGroup.DOFade(0, 4f).SetEase(Ease.InExpo);
         canvasGroup.transform.DOScale(0.8f, 4f).SetEase(Ease.InExpo);
         logoGroup.transform.DOScale(0.8f, 4f).SetEase(Ease.InExpo);
 
-        cameraFollow.GetComponent<Camera>().DOOrthoSize(4, 5f).SetEase(Ease.InExpo)
-        .OnComplete(() => {
-            playerController.CanMove = true;
-            cameraFollow.enabled = true;
+        gameMediator.ChangeCameraOrthoSize(4f, 5f, () => {
+            gameMediator.SetCameraFollowEnabled(true); 
+            gameMediator.SetPlayerCanMove(true);
         });
+
     }
 
     // Update is called once per frame
