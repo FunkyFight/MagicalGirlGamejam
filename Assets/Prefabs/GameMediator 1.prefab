@@ -270,6 +270,10 @@ PrefabInstance:
       propertyPath: mediator
       value: 
       objectReference: {fileID: 565054465003053965}
+    - target: {fileID: 1726564561138193222, guid: 0fc37f90691d3064c88c0e146c54f245, type: 3}
+      propertyPath: 'transformationPrefabs.Array.data[3]'
+      value: 
+      objectReference: {fileID: 1890229537881106445, guid: e8c4f7a2f5e9eee4f9ac80fa86541689, type: 3}
     - target: {fileID: 4585980005760778553, guid: 0fc37f90691d3064c88c0e146c54f245, type: 3}
       propertyPath: m_LocalPosition.x
       value: 0.6870358

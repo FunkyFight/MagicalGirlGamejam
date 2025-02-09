@@ -289,6 +289,7 @@ public class AgaricController : MonoBehaviour
             rbody.linearVelocity = new Vector2(rbody.linearVelocity.x * 1.7f, rbody.linearVelocity.y);
             isPlane = false;
             rbody.gravityScale = graviteNormal;
+
         }
         if (rbody.gravityScale <4) // sert a regler le bug avec halfjump qui divise par 2 un peu près
         {
