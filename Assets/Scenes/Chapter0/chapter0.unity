@@ -53225,7 +53225,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 367261781821076199, guid: 861bb67a6a1d8f24bbf4677e9ca7234d, type: 3}
       propertyPath: m_LocalPosition.y
-      value: -71.51
+      value: 4.02
       objectReference: {fileID: 0}
     - target: {fileID: 565054465003053965, guid: 861bb67a6a1d8f24bbf4677e9ca7234d, type: 3}
       propertyPath: cameraFollow

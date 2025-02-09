@@ -7,11 +7,14 @@ using UnityEngine;
 public class GameMediator : MonoBehaviour
 {
     
+    [Header("Components")]
     [SerializeField] private PlayerManager playerManager;
     [SerializeField] private CameraFollow cameraFollow;
     [SerializeField] private MenuController menuController;
     [SerializeField] private AudioSource musicPlayer;
 
+    [Header("Settings")]
+    [SerializeField] private bool startMenu = true;
     
     void Awake()
     {
@@ -19,6 +22,7 @@ public class GameMediator : MonoBehaviour
 
         if(!successfullyLoaded) return;
         cameraFollow.target = playerManager.currentTransformationGameObject.transform;
+
     }
 
 
