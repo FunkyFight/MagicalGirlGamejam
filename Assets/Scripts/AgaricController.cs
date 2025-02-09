@@ -42,14 +42,14 @@ public class AgaricController : MonoBehaviour
      /*saut Champi variable*/
     [Header("SautChampi Settings")]
     [SerializeField] private float highJumpChampi = 2f;
-    [SerializeField] private float delayBeforeJumpChamp = 1f;  
+    //[SerializeField] private float delayBeforeJumpChamp = 0.2f;  
     private bool isChampiDelayActive = false;
     //test pour changer la couleur
     private SpriteRenderer spriteRenderer;
     private Color initialColor;
 
     [Header("PlaneChampi Settings")]
-    [SerializeField] private float planeChampiGravityScale = 0.3f;
+    [SerializeField] private float planeChampiGravityScale = 0.6f;
     [SerializeField] private float planeChampiHorizontalSpeed = 5f;
     private bool isPlane = false;
      private float graviteNormal = 4f;
@@ -231,7 +231,9 @@ public class AgaricController : MonoBehaviour
         if (!CanJump) return;
         if (context.phase == InputActionPhase.Started)
         {   
-            rbody.linearVelocityY = 0;
+            if (IsGrounded()) {
+                rbody.linearVelocity = new Vector2(rbody.linearVelocity.x, jumpHeight / 2);
+            }
             isChampiDelayActive = true;
             spriteRenderer.color = Color.red;
             CanMove = false;
@@ -241,16 +243,20 @@ public class AgaricController : MonoBehaviour
     
     private IEnumerator DelaySautChampi()
     {
-        yield return new WaitForSeconds(delayBeforeJumpChamp);
-        CanMove = true;
-        if (IsGrounded()) 
+        
+        while (IsGrounded())
         {
-            rbody.linearVelocity = new Vector2(rbody.linearVelocity.x, jumpHeight * highJumpChampi);
-            isJumping = true;
-            spriteRenderer.color = initialColor;
+            yield return null;
         }
-
-        isChampiDelayActive = false; 
+        while (!IsGrounded())
+        {
+            yield return null;
+        }
+        rbody.linearVelocity = new Vector2(rbody.linearVelocity.x, jumpHeight * highJumpChampi);
+        isJumping = true;
+        spriteRenderer.color = initialColor;
+        CanMove = true;
+        isChampiDelayActive = false;
     }
 
     
@@ -264,25 +270,33 @@ public class AgaricController : MonoBehaviour
             {   
                 isPlane = true;
                 spriteRenderer.color = Color.blue;
-                rbody.linearVelocity = new Vector2(rbody.linearVelocity.x/2, 0);
+                rbody.linearVelocity = new Vector2(rbody.linearVelocity.x/1.2f, 0);
                 rbody.gravityScale = planeChampiGravityScale;
                 moveSpeed = 2f;
+                StartCoroutine(CoroutinePlaneChampi());
             }
-        } else if (context.phase == InputActionPhase.Canceled) {
-           spriteRenderer.color = initialColor;
+        } 
+    }
+    private IEnumerator CoroutinePlaneChampi()
+    {
+         while (!IsGrounded())
+        {
+            yield return null;
+        }
+        spriteRenderer.color = initialColor;
            
-            if (isPlane)
-            {
-                rbody.linearVelocity = new Vector2(rbody.linearVelocity.x * moveSpeed, rbody.linearVelocity.y);
-                isPlane = false;
-                rbody.gravityScale = graviteNormal;
-                moveSpeed = 10f;
-            }
-            if (rbody.gravityScale <4) // sert a regler le bug avec halfjump qui divise par 2 un peu près
-            {
-                rbody.gravityScale = 4f;
-            }
+        if (isPlane)
+        {
+            rbody.linearVelocity = new Vector2(rbody.linearVelocity.x * moveSpeed, rbody.linearVelocity.y);
+            isPlane = false;
+            rbody.gravityScale = graviteNormal;
+            moveSpeed = 10f;
             
         }
+        if (rbody.gravityScale <4) // sert a regler le bug avec halfjump qui divise par 2 un peu près
+        {
+            rbody.gravityScale = 4f;
+        }
+            
     }
 }
