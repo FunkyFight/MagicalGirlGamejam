@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using UnityEditor.PackageManager;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
@@ -51,7 +52,7 @@ public class AgaricController : MonoBehaviour
     [SerializeField] private float planeChampiGravityScale = 0.3f;
     [SerializeField] private float planeChampiHorizontalSpeed = 5f;
     private bool isPlane = false;
-     private float graviteNormal;
+     private float graviteNormal = 4f;
 
     // Components
     private Rigidbody2D rbody;
@@ -61,7 +62,6 @@ public class AgaricController : MonoBehaviour
         rbody = GetComponent<Rigidbody2D>();
         spriteRenderer = GetComponent<SpriteRenderer>();
         initialColor = spriteRenderer.color;
-        graviteNormal = rbody.gravityScale;
     }
 
     public void Move(InputAction.CallbackContext context)
@@ -214,11 +214,12 @@ public class AgaricController : MonoBehaviour
         {
             Collider2D collider2D = Physics2D.OverlapCircle(position, radius, layer);
             if (collider2D != null)
-            {
+            {   
+                rbody.gravityScale = 4f; // sert a regler le bug avec halfjump qui divise par 2 un peu près et le planeChampi
                 return true;
             }
         }
-
+        
         return false;
     }
 
@@ -234,11 +235,10 @@ public class AgaricController : MonoBehaviour
             isChampiDelayActive = true;
             spriteRenderer.color = Color.red;
             StartCoroutine(DelaySautChampi());
-            
         } else if (context.phase == InputActionPhase.Canceled) 
         {
             spriteRenderer.color = initialColor;
-        }
+        }  
     }
     private IEnumerator DelaySautChampi()
     {
@@ -248,9 +248,11 @@ public class AgaricController : MonoBehaviour
             rbody.linearVelocity = new Vector2(rbody.linearVelocity.x, jumpHeight * highJumpChampi);
             isJumping = true;
         }
-        isChampiDelayActive = false;
+
+        isChampiDelayActive = false; 
     }
 
+    
 
     /*test abality 2*/
     public void PlaneChampi(InputAction.CallbackContext context)
@@ -261,15 +263,25 @@ public class AgaricController : MonoBehaviour
             {   
                 isPlane = true;
                 spriteRenderer.color = Color.blue;
+                rbody.linearVelocity = new Vector2(rbody.linearVelocity.x/2, 0);
                 rbody.gravityScale = planeChampiGravityScale;
+                moveSpeed = 2f;
             }
         } else if (context.phase == InputActionPhase.Canceled) {
            spriteRenderer.color = initialColor;
+           
             if (isPlane)
             {
+                rbody.linearVelocity = new Vector2(rbody.linearVelocity.x * moveSpeed, rbody.linearVelocity.y);
                 isPlane = false;
                 rbody.gravityScale = graviteNormal;
+                moveSpeed = 10f;
             }
+            if (rbody.gravityScale <4) // sert a regler le bug avec halfjump qui divise par 2 un peu près
+            {
+                rbody.gravityScale = 4f;
+            }
+            
         }
     }
 }
