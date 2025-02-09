@@ -111,7 +111,7 @@ public class MenuController : MonoBehaviour
     void Play()
     {
         gameMediator.SetCameraFollowEnabled(false);
-        gameMediator.SetCameraSizeAndOffset(4, new Vector2(0, 1.5f));
+        gameMediator.SetCameraSizeAndOffset(5, new Vector2(0, 1.5f));
         isShown = false;
 
         AudioClip playButtonClip = playButtonClips[Random.Range(0, playButtonClips.Count)];
