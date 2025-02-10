@@ -202,4 +202,11 @@ public class MagicalGirlController : MonoBehaviour
 
         return false;
     }
+
+    public void Attack(InputAction.CallbackContext context)
+    {
+        print("niggers");
+        ArrowController arrow = (ArrowController)(gameObject.AddComponent(typeof(ArrowController)));
+        Instantiate(arrow);
+    }
 }
