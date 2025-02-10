@@ -280,7 +280,7 @@ MonoBehaviour:
       m_Calls:
       - m_Target: {fileID: 7970105039662453700}
         m_TargetAssemblyTypeName: AgaricController, Assembly-CSharp
-        m_MethodName: SautChampi
+        m_MethodName: Ability1
         m_Mode: 0
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
@@ -296,7 +296,7 @@ MonoBehaviour:
       m_Calls:
       - m_Target: {fileID: 7970105039662453700}
         m_TargetAssemblyTypeName: AgaricController, Assembly-CSharp
-        m_MethodName: PlaneChampi
+        m_MethodName: Ability2
         m_Mode: 0
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
@@ -325,13 +325,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c6f630c0a313aaa459c257ef3f21eaa9, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  CanMove: 1
   moveSpeed: 10
   jumpHeight: 14
   groundLayers:
   - serializedVersion: 2
     m_Bits: 8
   groundCheck: {fileID: 8998965775315119194}
-  wallCheck: {fileID: 0}
   coyoteTime: 7
   jumpBufferTime: 7
   maxHalfTime: 5

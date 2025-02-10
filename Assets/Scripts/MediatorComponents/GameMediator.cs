@@ -23,6 +23,12 @@ public class GameMediator : MonoBehaviour
         if(!successfullyLoaded) return;
         cameraFollow.target = playerManager.currentTransformationGameObject.transform;
 
+        if(!startMenu)
+        {
+            Destroy(menuController.GetComponent<ScreenFade>().fadeCanvas.gameObject);
+            Destroy(menuController.gameObject);
+            musicPlayer.Stop();
+        }
     }
 
 
@@ -88,8 +94,9 @@ public class GameMediator : MonoBehaviour
         playerController.moveSpeed = speed;
     }
 
-    public Vector2 GetPlayerPosition()
+    public Vector2? GetPlayerPosition()
     {
+        if(playerManager.currentTransformationGameObject == null) return null;
         return playerManager.currentTransformationGameObject.transform.position;
     }
 

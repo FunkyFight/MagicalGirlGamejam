@@ -3,40 +3,12 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
-public class ThirianController : MonoBehaviour
+public class ThirianController : PlayerController
 {
-    [SerializeField] public bool CanMove {get; set;} = true;
-    [Header("Movement Settings")]
-    [SerializeField] private float moveSpeed = 10f;
-    [SerializeField] private float jumpHeight = 14f;
     [SerializeField] private float defaultGravityScale = 4f;
     private Vector2 moveInput;
 
-    private bool isJumping = false;
-    private float lastDirection = 1;
-
-    [Header("Collision Settings")]
-    [SerializeField] private List<LayerMask> groundLayers;
-    [SerializeField] private Transform groundCheck;
     [SerializeField] private Transform wallCheck;
-
-    [Header("Coyote Jump Settings")]
-    [SerializeField] private int coyoteTime = 7; // Frames pendant lesquelles le joueur peut sauter après avoir quitté le sol
-    private int coyoteBuffer = 0;
-    private bool canActivateCoyote = true;
-
-    [Header("Jump Buffering Settings")]
-    [SerializeField] private int jumpBufferTime = 7;
-    private int jumpBuffer = 0;
-
-    [Header("Half Gravity Jump Peak Settings")]
-    [SerializeField] private int maxHalfTime = 5;
-    [SerializeField] private float halfGravityCoef = 0.5f;
-    private int halfTime = 0;
-    private float halfEpsilon = 0.3f;
-
-    [Header("Variable Jump Height Settings")]
-    [SerializeField] private float jumpCutMultiplier = 0.5f; // Réduit la vélocité verticale en cas de relâchement précoce du bouton de saut
 
     [Header("Wall Jump Settings")]
     [SerializeField] private float xStrength = 2f; // Force horizontale appliquée lors d'un wall jump
@@ -56,9 +28,6 @@ public class ThirianController : MonoBehaviour
     private float dashCooldownRemaining = 0f;
     private bool isDashing = false;
 
-    // Composant
-    private Rigidbody2D rbody;
-
     void Start()
     {
         rbody = GetComponent<Rigidbody2D>();
@@ -66,7 +35,7 @@ public class ThirianController : MonoBehaviour
         lastGravityScale = defaultGravityScale;
     }
 
-    public void Move(InputAction.CallbackContext context)
+    public override void Move(InputAction.CallbackContext context)
     {
         if(!CanMove) return;
 
@@ -86,7 +55,7 @@ public class ThirianController : MonoBehaviour
         transform.localScale = new Vector3(lastDirection, 1, 1);
     }
 
-    public void Jump(InputAction.CallbackContext context)
+    public override void Jump(InputAction.CallbackContext context)
     {
         if(!CanMove) return;
 
@@ -141,7 +110,7 @@ public class ThirianController : MonoBehaviour
         canActivateCoyote = false;
     }
 
-    public void Dash(InputAction.CallbackContext context)
+    public override void Ability1(InputAction.CallbackContext context)
     {
         if(!CanMove) return;
 

@@ -36,12 +36,15 @@ public class MenuController : MonoBehaviour
 
     void Start()
     {
+        Vector2? playerPosition = gameMediator.GetPlayerPosition();
+        if(playerPosition == null) return;
+        
         playText.transform.DOShakePosition(floatDuration, floatStrength, floatVibrato, 90, false, false).SetLoops(-1).SetEase(Ease.InOutQuad);
         optionsText.transform.DOShakePosition(floatDuration, floatStrength, floatVibrato, 90, false, false).SetLoops(-1).SetEase(Ease.InOutQuad);
         quitText.transform.DOShakePosition(floatDuration, floatStrength, floatVibrato, 90, false, false).SetLoops(-1).SetEase(Ease.InOutQuad);
 
         gameMediator.SetCameraSizeAndOffset(2, new Vector2(0, 1.3f));
-        gameMediator.TeleportPlayerAndCameraInstantly(gameMediator.GetPlayerPosition());
+        gameMediator.TeleportPlayerAndCameraInstantly(playerPosition.Value);
         gameMediator.SetPlayerCanMove(false);
         gameMediator.SetPlayerSpeed(4);
 
@@ -79,6 +82,9 @@ public class MenuController : MonoBehaviour
     
     void selection()
     {
+        Vector2? playerPosition = gameMediator.GetPlayerPosition();
+        if(playerPosition == null) return;
+
         if (Time.time - lastInputTime < inputCooldown)
             return;
 
@@ -92,7 +98,7 @@ public class MenuController : MonoBehaviour
             lastInputTime = Time.time;
             
             AudioClip selectClip = selectClips[Random.Range(0, selectClips.Count)];
-            AudioSource.PlayClipAtPoint(selectClip, gameMediator.GetPlayerPosition());
+            AudioSource.PlayClipAtPoint(selectClip, playerPosition.Value);
         }
     }
 
@@ -110,12 +116,15 @@ public class MenuController : MonoBehaviour
 
     void Play()
     {
+        Vector2? playerPosition = gameMediator.GetPlayerPosition();
+        if(playerPosition == null) return;
+
         gameMediator.SetCameraFollowEnabled(false);
         gameMediator.SetCameraSizeAndOffset(5, new Vector2(0, 1.5f));
         isShown = false;
 
         AudioClip playButtonClip = playButtonClips[Random.Range(0, playButtonClips.Count)];
-        AudioSource.PlayClipAtPoint(playButtonClip, gameMediator.GetPlayerPosition());
+        AudioSource.PlayClipAtPoint(playButtonClip, playerPosition.Value);
 
         gameMediator.FadeMusicPlayer(0f, 4f);
 
