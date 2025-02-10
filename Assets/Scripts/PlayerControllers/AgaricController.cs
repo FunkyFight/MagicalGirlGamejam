@@ -13,9 +13,11 @@ public class AgaricController : PlayerController
     /*saut Champi variable*/
     [Header("SautChampi Settings")]
     [SerializeField] private float highJumpChampi = 2f;
+    [SerializeField] private float JumpChampiCooldown = 1f; // Cooldown du jump en secondes
+    private float JumpChampiCooldownRemaining = 0f; 
     private bool isChampiDelayActive = false;
-    private SpriteRenderer spriteRenderer;
-    private Color initialColor;
+    
+    
 
     [Header("PlaneChampi Settings")]
     [SerializeField] private float planeChampiGravityScale = 0.6f;
@@ -23,11 +25,11 @@ public class AgaricController : PlayerController
     private bool isPlane = false;
     private float graviteNormal;
     private float normalMoveSpeed;
+    
 
     void Start()
     {
         rbody = GetComponent<Rigidbody2D>();
-        spriteRenderer = GetComponent<SpriteRenderer>();
         normalMoveSpeed = moveSpeed;
         graviteNormal =rbody.gravityScale;
     }
@@ -90,7 +92,10 @@ public class AgaricController : PlayerController
         CoyoteJump();
         JumpBuffer();
         HalfJumpGravityPeak();
-
+        if (JumpChampiCooldownRemaining > 0f && IsGrounded()) 
+        {
+            JumpChampiCooldownRemaining -= Time.fixedDeltaTime;
+        }
         if (IsGrounded() && rbody.linearVelocityY == 0)
         {
             isJumping = false;
@@ -197,6 +202,11 @@ public class AgaricController : PlayerController
     {   
         if (!CanMove) return;
         if (!CanJump) return;
+        if (JumpChampiCooldownRemaining > 0f) 
+        {
+            return;
+        }
+        JumpChampiCooldownRemaining = JumpChampiCooldown;
         if (context.phase == InputActionPhase.Started)
         {   
             if (IsGrounded()) {
