@@ -1,4 +1,5 @@
 using System;
+using Unity.VisualScripting;
 using UnityEngine;
 
 public class SlimeEnemyAI : MonoBehaviour
@@ -43,12 +44,13 @@ public class SlimeEnemyAI : MonoBehaviour
         
         jumpBuffer -= Time.deltaTime;
     }
-
     
 
     private void Patrol()
     {
-        
+        Vector2? playerPosition = mediator.GetPlayerPosition();
+        if(playerPosition == null) return;
+
         jumpsIntervals = patrollingJumpIntervals;
         if(jumpBuffer <= 0)
         {
@@ -63,19 +65,22 @@ public class SlimeEnemyAI : MonoBehaviour
 
 
         // Condition de transition -> ChasePlayer()
-        float distance = Vector2.Distance(transform.position, mediator.GetPlayerPosition());
+        float distance = Vector2.Distance(transform.position, playerPosition.Value);
         if(distance <= detectionRange) enemyState = EnemyStates.CHASING;
 
     }
 
     private void ChasePlayer()
     {
-        
+        Vector2? playerPosition = mediator.GetPlayerPosition();
+        if(playerPosition == null) return;
+
         jumpsIntervals = chasingJumpIntervals;
         if(jumpBuffer <= 0)
         {
+            
             // On peut refaire sauter le slime, on choisit une direction aléatoire.
-            int randomDirection = (mediator.GetPlayerPosition().x - transform.position.x <= 0) ? -1 : 1; 
+            int randomDirection = (playerPosition.Value.x - transform.position.x <= 0) ? -1 : 1; 
             body.linearVelocity = new Vector2(jumpXSpeed * randomDirection, jumpYSpeed);
 
             // On relance le buffer
@@ -85,7 +90,7 @@ public class SlimeEnemyAI : MonoBehaviour
 
 
         // Condition de transition -> Patrol()
-        float distance = Vector2.Distance(transform.position, mediator.GetPlayerPosition());
+        float distance = Vector2.Distance(transform.position, playerPosition.Value);
         if(distance > detectionRange) enemyState = EnemyStates.PATROLLING;
     }
 }

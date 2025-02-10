@@ -94,8 +94,9 @@ public class GameMediator : MonoBehaviour
         playerController.moveSpeed = speed;
     }
 
-    public Vector2 GetPlayerPosition()
+    public Vector2? GetPlayerPosition()
     {
+        if(playerManager.currentTransformationGameObject == null) return null;
         return playerManager.currentTransformationGameObject.transform.position;
     }
 
