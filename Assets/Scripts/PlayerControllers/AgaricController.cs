@@ -5,46 +5,15 @@ using UnityEditor.PackageManager;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
-public class AgaricController : MonoBehaviour
+public class AgaricController : PlayerController
 {
 
-    [SerializeField] public bool CanMove {get; set;} = true;
     [SerializeField] public bool CanJump {get; set;} = true;
-    [Header("Movement Settings")]
-    [SerializeField] private float moveSpeed = 10f;
-    [SerializeField] private float jumpHeight = 14f;
-    private bool isJumping = false;
-    private float lastDirection = 1;
 
-    [Header("Collision Settings")]
-    [SerializeField] private List<LayerMask> groundLayers;
-    [SerializeField] private Transform groundCheck;
-    [SerializeField] private Transform wallCheck;
-
-    [Header("Coyote Jump Settings")]
-    [SerializeField] private int coyoteTime = 7; // Frames que le joueur dispose pour faire un saut quand il est tombé
-    private int coyoteBuffer = 0;
-    private bool canActivateCoyote = true;
-
-    [Header("Jump Buffering Settings")]
-    [SerializeField] private int jumpBufferTime = 7;
-    private int jumpBuffer = 0;
-
-    [Header("Half Gravity Jump Peak Settings")]
-    [SerializeField] private int maxHalfTime = 5;
-    [SerializeField] private float halfGravityCoef = 0.5f;
-    private int halfTime = 0;
-    private float halfEpsilon = 0.3f;
-
-    [Header("Variable Jump Height Settings")]
-    [SerializeField] private float jumpCutMultiplier = 0.5f; // Multiplie la vélocité verticale lors d'un relâchement précoce
-
-     /*saut Champi variable*/
+    /*saut Champi variable*/
     [Header("SautChampi Settings")]
     [SerializeField] private float highJumpChampi = 2f;
-    //[SerializeField] private float delayBeforeJumpChamp = 0.2f;  
     private bool isChampiDelayActive = false;
-    //test pour changer la couleur
     private SpriteRenderer spriteRenderer;
     private Color initialColor;
 
@@ -55,9 +24,6 @@ public class AgaricController : MonoBehaviour
     private float graviteNormal;
     private float normalMoveSpeed;
 
-    // Components
-    private Rigidbody2D rbody;
-
     void Start()
     {
         rbody = GetComponent<Rigidbody2D>();
@@ -66,7 +32,7 @@ public class AgaricController : MonoBehaviour
         graviteNormal =rbody.gravityScale;
     }
 
-    public void Move(InputAction.CallbackContext context)
+    public override void Move(InputAction.CallbackContext context)
     {
         if(!CanMove) return;
 
@@ -80,10 +46,10 @@ public class AgaricController : MonoBehaviour
         rbody.linearVelocityX = direction.x * moveSpeed;
 
         transform.localScale = new Vector3(lastDirection, 1, 1);
-
+        
     }
 
-    public void Jump(InputAction.CallbackContext context)
+    public override void Jump(InputAction.CallbackContext context)
     {
         if(!CanMove) return;
         if(!CanJump) return;
@@ -227,7 +193,7 @@ public class AgaricController : MonoBehaviour
 
     /* test abality 1*/
 
-    public void SautChampi(InputAction.CallbackContext context) 
+    public override void Ability1(InputAction.CallbackContext context) 
     {   
         if (!CanMove) return;
         if (!CanJump) return;
@@ -262,7 +228,7 @@ public class AgaricController : MonoBehaviour
     
 
     /*test abality 2*/
-    public void PlaneChampi(InputAction.CallbackContext context)
+    public override void Ability2(InputAction.CallbackContext context)
     {   
         if (context.phase == InputActionPhase.Started)
         {

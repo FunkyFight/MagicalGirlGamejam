@@ -281,7 +281,7 @@ MonoBehaviour:
       m_Calls:
       - m_Target: {fileID: 8116911278927915578}
         m_TargetAssemblyTypeName: ThirianController, Assembly-CSharp
-        m_MethodName: Dash
+        m_MethodName: Ability1
         m_Mode: 0
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
@@ -314,19 +314,20 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e42cb47f2815e5c4388d5c0a35618cdd, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  CanMove: 1
   moveSpeed: 10
   jumpHeight: 14
-  defaultGravityScale: 4
   groundLayers:
   - serializedVersion: 2
     m_Bits: 8
   groundCheck: {fileID: 2684518094262514067}
-  wallCheck: {fileID: 832516055009253315}
   coyoteTime: 7
   jumpBufferTime: 7
   maxHalfTime: 5
   halfGravityCoef: 0.5
   jumpCutMultiplier: 0.5
+  defaultGravityScale: 4
+  wallCheck: {fileID: 832516055009253315}
   xStrength: 2
   wallJumpGraceFrames: 10
   wallJumpCooldownFrames: 10
