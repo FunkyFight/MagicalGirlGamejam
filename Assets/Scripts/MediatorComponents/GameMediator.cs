@@ -34,6 +34,18 @@ public class GameMediator : MonoBehaviour
 
 
     #region Player
+    public PlayerController GetPlayerController()
+    {
+        if (playerManager == null)
+        {
+            Debug.LogWarning("PlayerManager is not assigned.");
+            return null;
+        }
+
+        return playerManager.currentTransformationGameObject.GetComponent<PlayerController>();
+    }
+
+
     /// <summary>
     /// Switch de personnage de magical girl puis de sujet de caméra
     /// </summary>

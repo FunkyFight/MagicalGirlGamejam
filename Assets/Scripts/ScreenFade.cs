@@ -5,7 +5,7 @@ using DG.Tweening;
 public class ScreenFade : MonoBehaviour
 {
     public Canvas fadeCanvas;            // Canvas to hold the fade image
-    private CanvasGroup canvasGroup;      // CanvasGroup to control the alpha
+    public CanvasGroup canvasGroup;      // CanvasGroup to control the alpha
     private Image blackImage;             // Image to cover the screen
 
     void Awake()
