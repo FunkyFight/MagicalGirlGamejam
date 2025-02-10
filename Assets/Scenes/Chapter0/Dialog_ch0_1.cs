@@ -8,7 +8,7 @@ public class Dialog_ch0_1 : CinematicStarter
         dialogueRunner.StartDialogue("Gigi_Monologue");
         yield return new WaitUntil(() => !dialogueRunner.IsDialogueRunning);
 
-        gameMediator.FadeToBlack(5f);
+        gameMediator.FadeToBlack(0.5f);
         yield return new WaitForSeconds(5f);
 
         dialogueRunner.StartDialogue("Gigi_Monologue_2");
