@@ -24,8 +24,9 @@ public class ThirianController : PlayerController
     [SerializeField] private float dashDuration = 0.2f; // Durée du dash en secondes
     [SerializeField] private float dashCooldown = 0.5f; // Cooldown du dash en secondes
     [SerializeField] private float dashFriction = 0.95f; // Friction applied during dash
+    [SerializeField] private int maxDashCount = 1;
+    private int dahsCount = 1;
     private float dashTimeRemaining = 0f;
-    private float dashCooldownRemaining = 0f;
     private bool isDashing = false;
 
     void Start()
@@ -118,7 +119,7 @@ public class ThirianController : PlayerController
             return;
 
         // Si le dash est en cooldown, on ne fait rien
-        if (dashCooldownRemaining > 0f)
+        if (dahsCount == 0)
         {
             return;
         }
@@ -126,13 +127,24 @@ public class ThirianController : PlayerController
         // Début du dash
         isDashing = true;
         dashTimeRemaining = dashDuration;
-        dashCooldownRemaining = dashCooldown;
+        dahsCount--;
 
         // On désactive temporairement la gravité pour un dash purement horizontal
         rbody.gravityScale = 0;
 
-        // Applique une vélocité fixe dans la dernière direction connue
-        rbody.linearVelocity = new Vector2(lastDirection * dashStrength, 0);
+        Vector2 direction = InputSystem.actions["Move"].ReadValue<Vector2>();
+
+        // Snap l'angle à 8 directions
+        float angle = Mathf.Atan2(direction.y, direction.x) * Mathf.Rad2Deg;
+        float snappedAngle = Mathf.Round(angle / 45.0f) * 45.0f;
+        Vector2 snappedDirection = new Vector2(Mathf.Cos(snappedAngle * Mathf.Deg2Rad), Mathf.Sin(snappedAngle * Mathf.Deg2Rad));
+
+        // Normaliser la direction pour obtenir une magnitude de 1
+        snappedDirection = snappedDirection.normalized;
+
+        // Appliquer la vitesse constante dans la direction choisie
+        rbody.linearVelocity = snappedDirection * dashStrength;
+
     }
 
     void FixedUpdate()
@@ -147,13 +159,12 @@ public class ThirianController : PlayerController
                 isDashing = false;
                 // Restauration de la gravité
                 rbody.gravityScale = defaultGravityScale;
-                rbody.linearVelocityX = 0;
+                rbody.linearVelocity = Vector2.zero;
+                CanMove = true;
             }
         }
-        if (dashCooldownRemaining > 0f)
-        {
-            dashCooldownRemaining -= Time.fixedDeltaTime;
-        }
+
+        if(IsGrounded()) dahsCount = maxDashCount;
 
         CoyoteJump();
         JumpBuffer();
