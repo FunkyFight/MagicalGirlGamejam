@@ -6,7 +6,7 @@ public class SlimeEnemyAI : EnemyAI
 {
     enum EnemyStates {PATROLLING, CHASING}
 
-    [SerializeField] private GameMediator mediator;
+    
     
     [SerializeField] private float jumpXSpeed = 10f;
     [SerializeField] private float jumpYSpeed = 10f;
