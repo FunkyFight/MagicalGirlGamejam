@@ -7,7 +7,7 @@ public class SlimeEnemyAI : EnemyAI
     enum EnemyStates {PATROLLING, CHASING}
 
     
-    
+    [Header("Jump Intervals Settings")]
     [SerializeField] private float jumpXSpeed = 10f;
     [SerializeField] private float jumpYSpeed = 10f;
     [SerializeField] private float jumpsIntervals = 1f; // En secondes
