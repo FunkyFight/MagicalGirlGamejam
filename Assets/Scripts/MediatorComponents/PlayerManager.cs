@@ -1,3 +1,4 @@
+using System.Collections;
 using System.Collections.Generic;
 using DG.Tweening;
 using UnityEngine;
@@ -25,6 +26,9 @@ public class PlayerManager : MonoBehaviour
     [SerializeField] private int leftSlotTransformationIndex = -1;
     [SerializeField] private int rightSlotTransformationIndex = -1;
     public GameObject currentTransformationGameObject {private set; get;}
+
+
+    private bool isAlive = true;
 
 
     void Start()
@@ -63,6 +67,7 @@ public class PlayerManager : MonoBehaviour
 
         currentTransformationGameObject = Instantiate(transformationPrefabs[characterIndex], transform);
         currentTransformationGameObject.GetComponent<PlayerDamageController>().playerManager = this;
+        currentTransformationGameObject.transform.position = transform.position;
 
         // Redéfinition des slots
         leftSlotTransformationIndex = (leftSlotTransformationIndex == characterIndex) ? currentTransformationIndex : leftSlotTransformationIndex;
@@ -80,12 +85,13 @@ public class PlayerManager : MonoBehaviour
     /// <returns>false si échec, true sinon</returns>
     public bool SwitchToCharacter(int characterIndex)
     {
+        if(!isAlive) return false;
         if(characterIndex == -1) 
         {
             return false;
         }
 
-        if(mana <= 0) return false; 
+        if(mana <= 0 && characterIndex > 0) return false; 
 
         // Si on est en forme humaine alors peut importe la transformation on repasse d'abord en magical girl
         if(currentTransformationIndex == 0) characterIndex = 1;
@@ -129,6 +135,15 @@ public class PlayerManager : MonoBehaviour
         return true;
     }
 
+    public void Kill()
+    {
+        ps.startColor = Color.red;
+        ps.transform.position = currentTransformationGameObject.transform.position;
+        StartCoroutine(playSwitchParticles(0.1f));
+        Destroy(currentTransformationGameObject);
+        isAlive = false;
+    }
+
     public void OnLeftShoulder()
     {
         mediator.SwitchPlayerMagicalGirlTransformation(leftSlotTransformationIndex);
@@ -139,15 +154,42 @@ public class PlayerManager : MonoBehaviour
         mediator.SwitchPlayerMagicalGirlTransformation(rightSlotTransformationIndex);
     }
 
+    private bool isInvincible = false;
+    private float invincibilityDuration = 1.5f; // Duration of invincibility in seconds
+
     public void Damage()
     {
-        if (currentTransformationIndex == 0) 
-            health--;
-        else 
-            mana = Mathf.FloorToInt(mana * 0.75f);
+        if (isInvincible) return;
 
-        if(mana == 0) mediator.SwitchPlayerMagicalGirlTransformation(0);
-        if(health == 0) UnityEngine.SceneManagement.SceneManager.LoadScene(UnityEngine.SceneManagement.SceneManager.GetActiveScene().name);
+        
+        StartCoroutine(ActivateInvincibilityFrames());
+        if (currentTransformationIndex == 0) 
+        {
+            health--;
+            if (health == 0)
+            {
+                Kill();
+                return;
+            }
+        }
+        else 
+        {
+            mana -= 25;
+            if (mana <= 0)
+            {
+                mediator.SwitchPlayerMagicalGirlTransformation(0);
+                return;
+            }
+        }
+
+        StartCoroutine(FlickerRedOnDamage(currentTransformationGameObject, 1f, 0.1f));
+    }
+
+    private IEnumerator ActivateInvincibilityFrames()
+    {
+        isInvincible = true;
+        yield return new WaitForSeconds(invincibilityDuration);
+        isInvincible = false;
     }
 
     private IEnumerator<object> playSwitchParticles(float duration)
@@ -155,5 +197,31 @@ public class PlayerManager : MonoBehaviour
         ps.Play();
         yield return new WaitForSeconds(duration);
         ps.Stop();
+    }
+
+    private IEnumerator FlickerRedOnDamage(GameObject entity, float flickerDuration, float flickerInterval)
+    {
+        SpriteRenderer spriteRenderer = entity.GetComponent<SpriteRenderer>();
+        if (spriteRenderer == null)
+        {
+            Debug.LogWarning("SpriteRenderer not found on the entity.");
+            yield break;
+        }
+
+        float elapsedTime = 0f;
+        Color originalColor = spriteRenderer.color;
+        Color flickerColor = Color.red;
+
+        while (elapsedTime < flickerDuration)
+        {
+            spriteRenderer.color = flickerColor;
+            yield return new WaitForSeconds(flickerInterval);
+            spriteRenderer.color = originalColor;
+            yield return new WaitForSeconds(flickerInterval);
+
+            elapsedTime += flickerInterval * 2; // Account for both flicker and revert intervals
+        }
+
+        spriteRenderer.color = originalColor; // Ensure the color is reset to original
     }
 }

@@ -3,52 +3,20 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
-public class MagicalGirlController : MonoBehaviour
+public class MagicalGirlController : PlayerController
 {
-    [SerializeField] public bool CanMove {get; set;} = true;
-    [Header("Movement Settings")]
-    [SerializeField] private float moveSpeed = 12f;
-    [SerializeField] private float jumpHeight = 16f;
-    private bool isJumping = false;
-    private float lastDirection = 1;
-
-    [Header("Collision Settings")]
-    [SerializeField] private List<LayerMask> groundLayers;
-    [SerializeField] private Transform groundCheck;
-
-    [Header("Coyote Jump Settings")]
-    [SerializeField] private int coyoteTime = 7; // Frames que le joueur dispose pour faire un saut quand il est tombé
-    private int coyoteBuffer = 0;
-    private bool canActivateCoyote = true;
-
-    [Header("Jump Buffering Settings")]
-    [SerializeField] private int jumpBufferTime = 7;
-    private int jumpBuffer = 0;
-
-    [Header("Half Gravity Jump Peak Settings")]
-    [SerializeField] private int maxHalfTime = 5;
-    [SerializeField] private float halfGravityCoef = 0.5f;
-    private int halfTime = 0;
-    private float halfEpsilon = 0.3f;
-
-    [Header("Variable Jump Height Settings")]
-    [SerializeField] private float jumpCutMultiplier = 0.5f; // Multiplie la vélocité verticale lors d'un relâchement précoce
-    
     [Header("Attack Speed")]
     [SerializeField] private float attackSpeed = 16f;
 
     [Header("Attack Damage")]
     [SerializeField] private int attackDmg = 20;
 
-    // Components
-    private Rigidbody2D rbody;
-
     void Start()
     {
         rbody = GetComponent<Rigidbody2D>();
     }
 
-    public void Move(InputAction.CallbackContext context)
+    public override void Move(InputAction.CallbackContext context)
     {
         if(!CanMove) return;
 
@@ -64,7 +32,7 @@ public class MagicalGirlController : MonoBehaviour
         transform.localScale = new Vector3(lastDirection, 1, 1);
     }
 
-    public void Jump(InputAction.CallbackContext context)
+    public override void Jump(InputAction.CallbackContext context)
     {
         if(!CanMove) return;
 
@@ -201,12 +169,5 @@ public class MagicalGirlController : MonoBehaviour
         }
 
         return false;
-    }
-
-    public void Attack(InputAction.CallbackContext context)
-    {
-        print("niggers");
-        ArrowController arrow = (ArrowController)(gameObject.AddComponent(typeof(ArrowController)));
-        Instantiate(arrow);
     }
 }

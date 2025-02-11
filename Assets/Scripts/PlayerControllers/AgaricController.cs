@@ -1,70 +1,40 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using UnityEditor.PackageManager;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
-public class AgaricController : MonoBehaviour
+public class AgaricController : PlayerController
 {
 
-    [SerializeField] public bool CanMove {get; set;} = true;
     [SerializeField] public bool CanJump {get; set;} = true;
-    [Header("Movement Settings")]
-    [SerializeField] private float moveSpeed = 10f;
-    [SerializeField] private float jumpHeight = 14f;
-    private bool isJumping = false;
-    private float lastDirection = 1;
 
-    [Header("Collision Settings")]
-    [SerializeField] private List<LayerMask> groundLayers;
-    [SerializeField] private Transform groundCheck;
-    [SerializeField] private Transform wallCheck;
-
-    [Header("Coyote Jump Settings")]
-    [SerializeField] private int coyoteTime = 7; // Frames que le joueur dispose pour faire un saut quand il est tombé
-    private int coyoteBuffer = 0;
-    private bool canActivateCoyote = true;
-
-    [Header("Jump Buffering Settings")]
-    [SerializeField] private int jumpBufferTime = 7;
-    private int jumpBuffer = 0;
-
-    [Header("Half Gravity Jump Peak Settings")]
-    [SerializeField] private int maxHalfTime = 5;
-    [SerializeField] private float halfGravityCoef = 0.5f;
-    private int halfTime = 0;
-    private float halfEpsilon = 0.3f;
-
-    [Header("Variable Jump Height Settings")]
-    [SerializeField] private float jumpCutMultiplier = 0.5f; // Multiplie la vélocité verticale lors d'un relâchement précoce
-
-     /*saut Champi variable*/
+    /*saut Champi variable*/
     [Header("SautChampi Settings")]
     [SerializeField] private float highJumpChampi = 2f;
-    [SerializeField] private float delayBeforeJumpChamp = 1f;  
+    [SerializeField] private float JumpChampiCooldown = 1f; // Cooldown du jump en secondes
+    private float JumpChampiCooldownRemaining = 0f; 
     private bool isChampiDelayActive = false;
-    //test pour changer la couleur
-    private SpriteRenderer spriteRenderer;
-    private Color initialColor;
+    
+    
 
     [Header("PlaneChampi Settings")]
-    [SerializeField] private float planeChampiGravityScale = 0.3f;
+    [SerializeField] private float planeChampiGravityScale = 0.6f;
     [SerializeField] private float planeChampiHorizontalSpeed = 5f;
     private bool isPlane = false;
-     private float graviteNormal;
-
-    // Components
-    private Rigidbody2D rbody;
+    private float graviteNormal;
+    private float normalMoveSpeed;
+    
 
     void Start()
     {
         rbody = GetComponent<Rigidbody2D>();
-        spriteRenderer = GetComponent<SpriteRenderer>();
-        initialColor = spriteRenderer.color;
-        graviteNormal = rbody.gravityScale;
+        normalMoveSpeed = moveSpeed;
+        graviteNormal =rbody.gravityScale;
     }
 
-    public void Move(InputAction.CallbackContext context)
+    public override void Move(InputAction.CallbackContext context)
     {
         if(!CanMove) return;
 
@@ -78,10 +48,10 @@ public class AgaricController : MonoBehaviour
         rbody.linearVelocityX = direction.x * moveSpeed;
 
         transform.localScale = new Vector3(lastDirection, 1, 1);
-
+        
     }
 
-    public void Jump(InputAction.CallbackContext context)
+    public override void Jump(InputAction.CallbackContext context)
     {
         if(!CanMove) return;
         if(!CanJump) return;
@@ -122,7 +92,10 @@ public class AgaricController : MonoBehaviour
         CoyoteJump();
         JumpBuffer();
         HalfJumpGravityPeak();
-
+        if (JumpChampiCooldownRemaining > 0f && IsGrounded()) 
+        {
+            JumpChampiCooldownRemaining -= Time.fixedDeltaTime;
+        }
         if (IsGrounded() && rbody.linearVelocityY == 0)
         {
             isJumping = false;
@@ -214,62 +187,89 @@ public class AgaricController : MonoBehaviour
         {
             Collider2D collider2D = Physics2D.OverlapCircle(position, radius, layer);
             if (collider2D != null)
-            {
+            {   
+                rbody.gravityScale = graviteNormal; // sert a regler le bug avec halfjump qui divise par 2 un peu près et le planeChampi; je sais que quand tu vas lire ce message tu vas vouloir me buté
                 return true;
             }
         }
-
+        
         return false;
     }
 
     /* test abality 1*/
 
-    public void SautChampi(InputAction.CallbackContext context) 
+    public override void Ability1(InputAction.CallbackContext context) 
     {   
         if (!CanMove) return;
         if (!CanJump) return;
+        if (JumpChampiCooldownRemaining > 0f) 
+        {
+            return;
+        }
+        JumpChampiCooldownRemaining = JumpChampiCooldown;
         if (context.phase == InputActionPhase.Started)
         {   
-            rbody.linearVelocityY = 0;
+            if (IsGrounded()) {
+                rbody.linearVelocity = new Vector2(rbody.linearVelocity.x, jumpHeight / 2);
+            }
             isChampiDelayActive = true;
-            spriteRenderer.color = Color.red;
+            CanMove = false;
             StartCoroutine(DelaySautChampi());
-            
-        } else if (context.phase == InputActionPhase.Canceled) 
-        {
-            spriteRenderer.color = initialColor;
         }
     }
+    
     private IEnumerator DelaySautChampi()
     {
-        yield return new WaitForSeconds(delayBeforeJumpChamp);
-        if (IsGrounded()) 
+        
+        while (IsGrounded())
         {
-            rbody.linearVelocity = new Vector2(rbody.linearVelocity.x, jumpHeight * highJumpChampi);
-            isJumping = true;
+            yield return null;
         }
+        while (!IsGrounded())
+        {
+            yield return null;
+        }
+        rbody.linearVelocity = new Vector2(rbody.linearVelocity.x, jumpHeight * highJumpChampi);
+        isJumping = true;
+        CanMove = true;
         isChampiDelayActive = false;
     }
 
+    
 
     /*test abality 2*/
-    public void PlaneChampi(InputAction.CallbackContext context)
+    public override void Ability2(InputAction.CallbackContext context)
     {   
         if (context.phase == InputActionPhase.Started)
         {
             if (!IsGrounded()) 
             {   
+                moveSpeed = planeChampiHorizontalSpeed;
                 isPlane = true;
-                spriteRenderer.color = Color.blue;
+                rbody.linearVelocity = new Vector2(rbody.linearVelocity.x/1.7f, 0);
                 rbody.gravityScale = planeChampiGravityScale;
+                StartCoroutine(CoroutinePlaneChampi());
             }
-        } else if (context.phase == InputActionPhase.Canceled) {
-           spriteRenderer.color = initialColor;
-            if (isPlane)
-            {
-                isPlane = false;
-                rbody.gravityScale = graviteNormal;
-            }
+        } 
+    }
+    private IEnumerator CoroutinePlaneChampi()
+    {
+         while (!IsGrounded())
+        {
+            yield return null;
         }
+        
+        moveSpeed = normalMoveSpeed;
+        if (isPlane)
+        {
+            rbody.linearVelocity = new Vector2(rbody.linearVelocity.x * 1.7f, rbody.linearVelocity.y);
+            isPlane = false;
+            rbody.gravityScale = graviteNormal;
+
+        }
+        if (rbody.gravityScale <4) // sert a regler le bug avec halfjump qui divise par 2 un peu près
+        {
+            rbody.gravityScale = 4f;
+        }  
     }
 }

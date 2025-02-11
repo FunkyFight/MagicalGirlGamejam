@@ -3,40 +3,12 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
-public class ThirianController : MonoBehaviour
+public class ThirianController : PlayerController
 {
-    [SerializeField] public bool CanMove {get; set;} = true;
-    [Header("Movement Settings")]
-    [SerializeField] private float moveSpeed = 10f;
-    [SerializeField] private float jumpHeight = 14f;
     [SerializeField] private float defaultGravityScale = 4f;
     private Vector2 moveInput;
 
-    private bool isJumping = false;
-    private float lastDirection = 1;
-
-    [Header("Collision Settings")]
-    [SerializeField] private List<LayerMask> groundLayers;
-    [SerializeField] private Transform groundCheck;
     [SerializeField] private Transform wallCheck;
-
-    [Header("Coyote Jump Settings")]
-    [SerializeField] private int coyoteTime = 7; // Frames pendant lesquelles le joueur peut sauter après avoir quitté le sol
-    private int coyoteBuffer = 0;
-    private bool canActivateCoyote = true;
-
-    [Header("Jump Buffering Settings")]
-    [SerializeField] private int jumpBufferTime = 7;
-    private int jumpBuffer = 0;
-
-    [Header("Half Gravity Jump Peak Settings")]
-    [SerializeField] private int maxHalfTime = 5;
-    [SerializeField] private float halfGravityCoef = 0.5f;
-    private int halfTime = 0;
-    private float halfEpsilon = 0.3f;
-
-    [Header("Variable Jump Height Settings")]
-    [SerializeField] private float jumpCutMultiplier = 0.5f; // Réduit la vélocité verticale en cas de relâchement précoce du bouton de saut
 
     [Header("Wall Jump Settings")]
     [SerializeField] private float xStrength = 2f; // Force horizontale appliquée lors d'un wall jump
@@ -52,12 +24,10 @@ public class ThirianController : MonoBehaviour
     [SerializeField] private float dashDuration = 0.2f; // Durée du dash en secondes
     [SerializeField] private float dashCooldown = 0.5f; // Cooldown du dash en secondes
     [SerializeField] private float dashFriction = 0.95f; // Friction applied during dash
+    [SerializeField] private int maxDashCount = 1;
+    private int dahsCount = 1;
     private float dashTimeRemaining = 0f;
-    private float dashCooldownRemaining = 0f;
     private bool isDashing = false;
-
-    // Composant
-    private Rigidbody2D rbody;
 
     void Start()
     {
@@ -66,7 +36,7 @@ public class ThirianController : MonoBehaviour
         lastGravityScale = defaultGravityScale;
     }
 
-    public void Move(InputAction.CallbackContext context)
+    public override void Move(InputAction.CallbackContext context)
     {
         if(!CanMove) return;
 
@@ -86,7 +56,7 @@ public class ThirianController : MonoBehaviour
         transform.localScale = new Vector3(lastDirection, 1, 1);
     }
 
-    public void Jump(InputAction.CallbackContext context)
+    public override void Jump(InputAction.CallbackContext context)
     {
         if(!CanMove) return;
 
@@ -141,7 +111,7 @@ public class ThirianController : MonoBehaviour
         canActivateCoyote = false;
     }
 
-    public void Dash(InputAction.CallbackContext context)
+    public override void Ability1(InputAction.CallbackContext context)
     {
         if(!CanMove) return;
 
@@ -149,7 +119,7 @@ public class ThirianController : MonoBehaviour
             return;
 
         // Si le dash est en cooldown, on ne fait rien
-        if (dashCooldownRemaining > 0f)
+        if (dahsCount == 0)
         {
             return;
         }
@@ -157,13 +127,24 @@ public class ThirianController : MonoBehaviour
         // Début du dash
         isDashing = true;
         dashTimeRemaining = dashDuration;
-        dashCooldownRemaining = dashCooldown;
+        dahsCount--;
 
         // On désactive temporairement la gravité pour un dash purement horizontal
         rbody.gravityScale = 0;
 
-        // Applique une vélocité fixe dans la dernière direction connue
-        rbody.linearVelocity = new Vector2(lastDirection * dashStrength, 0);
+        Vector2 direction = InputSystem.actions["Move"].ReadValue<Vector2>();
+
+        // Snap l'angle à 8 directions
+        float angle = Mathf.Atan2(direction.y, direction.x) * Mathf.Rad2Deg;
+        float snappedAngle = Mathf.Round(angle / 45.0f) * 45.0f;
+        Vector2 snappedDirection = new Vector2(Mathf.Cos(snappedAngle * Mathf.Deg2Rad), Mathf.Sin(snappedAngle * Mathf.Deg2Rad));
+
+        // Normaliser la direction pour obtenir une magnitude de 1
+        snappedDirection = snappedDirection.normalized;
+
+        // Appliquer la vitesse constante dans la direction choisie
+        rbody.linearVelocity = snappedDirection * dashStrength;
+
     }
 
     void FixedUpdate()
@@ -178,13 +159,12 @@ public class ThirianController : MonoBehaviour
                 isDashing = false;
                 // Restauration de la gravité
                 rbody.gravityScale = defaultGravityScale;
-                rbody.linearVelocityX = 0;
+                rbody.linearVelocity = Vector2.zero;
+                CanMove = true;
             }
         }
-        if (dashCooldownRemaining > 0f)
-        {
-            dashCooldownRemaining -= Time.fixedDeltaTime;
-        }
+
+        if(IsGrounded()) dahsCount = maxDashCount;
 
         CoyoteJump();
         JumpBuffer();
