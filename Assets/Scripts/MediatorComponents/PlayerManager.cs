@@ -38,12 +38,15 @@ public class PlayerManager : MonoBehaviour
 
     void Update()
     {
-        if (Keyboard.current.numpad1Key.wasPressedThisFrame || Gamepad.current.leftShoulder.wasPressedThisFrame)
+        bool isLeftShoulderPressed = (Gamepad.current == null) ? false : Gamepad.current.leftShoulder.wasPressedThisFrame;
+        bool isRightShoulderPressed = (Gamepad.current == null) ? false : Gamepad.current.rightShoulder.wasPressedThisFrame;
+
+        if (Keyboard.current.numpad1Key.wasPressedThisFrame || isLeftShoulderPressed)
         {
             OnLeftShoulder();
         }
 
-        if (Keyboard.current.numpad2Key.wasPressedThisFrame || Gamepad.current.rightShoulder.wasPressedThisFrame)
+        if (Keyboard.current.numpad2Key.wasPressedThisFrame || isRightShoulderPressed)
         {
             OnRightShoulder();
         }
