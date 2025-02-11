@@ -2,14 +2,12 @@ using System;
 using Unity.VisualScripting;
 using UnityEngine;
 
-public class SlimeEnemyAI : MonoBehaviour
+public class SlimeEnemyAI : EnemyAI
 {
     enum EnemyStates {PATROLLING, CHASING}
 
     [SerializeField] private GameMediator mediator;
-
-    [Header("AI Settings")]
-    [SerializeField] private float detectionRange = 10f;
+    
     [SerializeField] private float jumpXSpeed = 10f;
     [SerializeField] private float jumpYSpeed = 10f;
     [SerializeField] private float jumpsIntervals = 1f; // En secondes
