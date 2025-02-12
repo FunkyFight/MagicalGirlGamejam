@@ -29879,7 +29879,10 @@ MonoBehaviour:
   XSpeed: 5
   YSpeed: 0.5
   DashIntervals: 1
-  chasingDashIntervals: 0.5
+  chasingDashCooldown: 2
+  firstChasingDashCooldown: 0.5
+  dashDuration: 0.2
+  dashSpeedMultiplier: 5
 --- !u!50 &1870567788
 Rigidbody2D:
   serializedVersion: 5

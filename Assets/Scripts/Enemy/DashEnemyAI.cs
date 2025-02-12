@@ -12,8 +12,14 @@ public class DashEnemyAI : EnemyAI
     [SerializeField] private float DashIntervals = 4f; // En secondes
     private float DashBuffer = 0;
 
-    [Header("Jump Intervals Settings")]
-    [SerializeField] private float chasingDashIntervals = 0.5f;
+    [Header("Chasing Dash Settings")]
+    [SerializeField] private float chasingDashCooldown = 2f; // Cooldown de 2 secondes entre les dashes en mode CHASING
+    [SerializeField] private float firstChasingDashCooldown = 0.5f;
+    [SerializeField] private float dashDuration = 0.2f;
+    [SerializeField] private float dashSpeedMultiplier = 5f;
+    private bool isDashing = false;
+    private float dashTimeRemaining = 0f;
+    private float firstDashTimeRemaining = 0f;
 
     private EnemyStates enemyState = EnemyStates.PATROLLING;
     private Rigidbody2D body;
@@ -29,13 +35,34 @@ public class DashEnemyAI : EnemyAI
         {
             case EnemyStates.PATROLLING:
                 Patrol();
+                firstDashTimeRemaining = firstChasingDashCooldown;
                 break;
+            
             case EnemyStates.CHASING:
-                ChasePlayer();
+                if(firstDashTimeRemaining > 0f)
+                {
+                    firstDashTimeRemaining -= Time.deltaTime;
+                }
+                else
+                {
+                    // Une fois le délai écoulé, on appelle ChasePlayer() pour tenter le dash
+                    ChasePlayer();
+                }
                 break;    
         }
         
         DashBuffer -= Time.deltaTime;
+
+        if (isDashing)
+        {
+            dashTimeRemaining -= Time.deltaTime;
+            if (dashTimeRemaining <= 0f)
+            {
+                isDashing = false;
+                // Fin du dash : on peut par exemple réinitialiser la vélocité horizontale
+                body.linearVelocity = new Vector2(0, body.linearVelocity.y);
+            }
+        }
     }
 
     private void Patrol()
@@ -51,42 +78,42 @@ public class DashEnemyAI : EnemyAI
 
             // On relance le buffer
             DashBuffer = DashIntervals;
-            return;
         }
 
 
         // Condition de transition -> ChasePlayer()
         float distance = Vector2.Distance(transform.position, playerPosition.Value);
-        if(distance <= detectionRange) enemyState = EnemyStates.CHASING;
+        if(distance <= detectionRange - 3) enemyState = EnemyStates.CHASING;
     }
 
     private void ChasePlayer()
     {   
 
-        if(DashBuffer > 0) {
-            enemyState = EnemyStates.PATROLLING;
-        } else {
-            Vector2? playerPosition = mediator.GetPlayerPosition();
-            if(playerPosition == null) return;
-
-            DashIntervals = chasingDashIntervals;
-            if(DashBuffer <= 0)
-            {
-            
-                // On peut refaire sauter le slime, dash dans la direction de FunkyFight se grosd chien.
-                int randomDirection = (playerPosition.Value.x - transform.position.x <= 0) ? -1 : 1; 
-                body.linearVelocity = new Vector2(XSpeed * randomDirection * 2.5f, YSpeed);
-
-                // On relance le buffer
-                DashBuffer = DashIntervals;
-                return;
-            }
-
-
-            // Condition de transition -> Patrol()
-            float distance = Vector2.Distance(transform.position, playerPosition.Value);
-            if(distance > detectionRange) enemyState = EnemyStates.PATROLLING;
-            }
         
+        Vector2? playerPosition = mediator.GetPlayerPosition();
+        if(playerPosition == null) return;
+        
+
+        // Condition de transition -> Patrol()
+        float distance = Vector2.Distance(transform.position, playerPosition.Value);
+        if(distance > detectionRange - 3) 
+        {
+            enemyState = EnemyStates.PATROLLING;
+            return;
+        }
+
+
+        if(DashBuffer <= 0)
+        {
+            
+            // On peut refaire sauter le slime, dash dans la direction de FunkyFight se grosd chien.
+            int randomDirection = (playerPosition.Value.x - transform.position.x <= 0) ? -1 : 1;
+            isDashing = true;
+            dashTimeRemaining = dashDuration;
+            body.linearVelocity = new Vector2(XSpeed * randomDirection * dashSpeedMultiplier, YSpeed);
+
+            // On relance le buffer
+            DashBuffer = chasingDashCooldown;
+        }
     }
 }
