@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using Unity.Collections;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
@@ -10,6 +11,9 @@ public class MagicalGirlController : PlayerController
 
     [Header("Attack Damage")]
     [SerializeField] private int attackDmg = 20;
+
+    [Header("Arrow")]
+    [SerializeField] private GameObject arrow;
 
     void Start()
     {
@@ -169,5 +173,15 @@ public class MagicalGirlController : PlayerController
         }
 
         return false;
+    }
+
+    public void Attack(InputAction.CallbackContext context)
+    {
+        if(context.phase != InputActionPhase.Started) return;
+        
+        GameObject arrowObj = Instantiate(arrow);
+        arrowObj.transform.position = new Vector2(transform.position.x + 1f * transform.localScale.x, transform.position.y);
+        ArrowProjectile arrowComp = arrowObj.GetComponent<ArrowProjectile>();
+        arrowComp.Direction = Mathf.FloorToInt(transform.localScale.x);
     }
 }
