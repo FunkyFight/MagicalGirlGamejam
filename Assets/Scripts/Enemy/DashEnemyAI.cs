@@ -6,89 +6,114 @@ public class DashEnemyAI : EnemyAI
 {
     enum EnemyStates {PATROLLING, CHASING}
 
+    [Header("movement Settings")]
+    [SerializeField] private float XSpeed = 2f;
+    [SerializeField] private float YSpeed = 2f;
+    [SerializeField] private float DashIntervals = 4f; // En secondes
+    private float DashBuffer = 0;
 
-    [Header("AI Settings")]
-    [SerializeField] private float jumpXSpeed = 10f;
-    [SerializeField] private float jumpYSpeed = 10f;
-    [SerializeField] private float jumpsIntervals = 1f; // En secondes
-    private float jumpBuffer = 0;
-
-    [Header("Jump Intervals Settings")]
-    [SerializeField] private float patrollingJumpIntervals = 1f;
-    [SerializeField] private float chasingJumpIntervals = 0.5f;
+    [Header("Chasing Dash Settings")]
+    [SerializeField] private float chasingDashCooldown = 2f; // Cooldown de 2 secondes entre les dashes en mode CHASING
+    [SerializeField] private float firstChasingDashCooldown = 0.5f;
+    [SerializeField] private float dashDuration = 0.2f;
+    [SerializeField] private float dashSpeedMultiplier = 5f;
+    private bool isDashing = false;
+    private float dashTimeRemaining = 0f;
+    private float firstDashTimeRemaining = 0f;
 
     private EnemyStates enemyState = EnemyStates.PATROLLING;
     private Rigidbody2D body;
-    
 
     void Start()
     {
         body = GetComponent<Rigidbody2D>();
     }
 
-    // Update is called once per frame
     void FixedUpdate()
     {
         switch(enemyState)
         {
             case EnemyStates.PATROLLING:
                 Patrol();
+                firstDashTimeRemaining = firstChasingDashCooldown;
                 break;
+            
             case EnemyStates.CHASING:
-                ChasePlayer();
+                if(firstDashTimeRemaining > 0f)
+                {
+                    firstDashTimeRemaining -= Time.deltaTime;
+                }
+                else
+                {
+                    // Une fois le délai écoulé, on appelle ChasePlayer() pour tenter le dash
+                    ChasePlayer();
+                }
                 break;    
         }
-
         
-        jumpBuffer -= Time.deltaTime;
+        DashBuffer -= Time.deltaTime;
+
+        if (isDashing)
+        {
+            dashTimeRemaining -= Time.deltaTime;
+            if (dashTimeRemaining <= 0f)
+            {
+                isDashing = false;
+                // Fin du dash : on peut par exemple réinitialiser la vélocité horizontale
+                body.linearVelocity = new Vector2(0, body.linearVelocity.y);
+            }
+        }
     }
-    
 
     private void Patrol()
     {
         Vector2? playerPosition = mediator.GetPlayerPosition();
         if(playerPosition == null) return;
 
-        jumpsIntervals = patrollingJumpIntervals;
-        if(jumpBuffer <= 0)
+        if(DashBuffer <= 0)
         {
-            // On peut refaire sauter le slime, on choisit une direction aléatoire.
+            // On peut faire deplacer le sonicWolf, on choisit une direction aléatoire.
             int randomDirection = UnityEngine.Random.Range(0, 2) * 2 - 1;
-            body.linearVelocity = new Vector2(jumpXSpeed * randomDirection, jumpYSpeed);
+            body.linearVelocity = new Vector2(XSpeed * randomDirection, 0);
 
             // On relance le buffer
-            jumpBuffer = jumpsIntervals;
-            return;
+            DashBuffer = DashIntervals;
         }
 
 
         // Condition de transition -> ChasePlayer()
         float distance = Vector2.Distance(transform.position, playerPosition.Value);
-        if(distance <= detectionRange) enemyState = EnemyStates.CHASING;
-
+        if(distance <= detectionRange - 3) enemyState = EnemyStates.CHASING;
     }
 
     private void ChasePlayer()
-    {
+    {   
+
+        
         Vector2? playerPosition = mediator.GetPlayerPosition();
         if(playerPosition == null) return;
+        
 
-        jumpsIntervals = chasingJumpIntervals;
-        if(jumpBuffer <= 0)
+        // Condition de transition -> Patrol()
+        float distance = Vector2.Distance(transform.position, playerPosition.Value);
+        if(distance > detectionRange - 3) 
         {
-            
-            // On peut refaire sauter le slime, on choisit une direction aléatoire.
-            int randomDirection = (playerPosition.Value.x - transform.position.x <= 0) ? -1 : 1; 
-            body.linearVelocity = new Vector2(jumpXSpeed * randomDirection, jumpYSpeed);
-
-            // On relance le buffer
-            jumpBuffer = jumpsIntervals;
+            enemyState = EnemyStates.PATROLLING;
             return;
         }
 
 
-        // Condition de transition -> Patrol()
-        float distance = Vector2.Distance(transform.position, playerPosition.Value);
-        if(distance > detectionRange) enemyState = EnemyStates.PATROLLING;
+        if(DashBuffer <= 0)
+        {
+            
+            // On peut refaire sauter le slime, dash dans la direction de FunkyFight se grosd chien.
+            int randomDirection = (playerPosition.Value.x - transform.position.x <= 0) ? -1 : 1;
+            isDashing = true;
+            dashTimeRemaining = dashDuration;
+            body.linearVelocity = new Vector2(XSpeed * randomDirection * dashSpeedMultiplier, YSpeed);
+
+            // On relance le buffer
+            DashBuffer = chasingDashCooldown;
+        }
     }
 }
