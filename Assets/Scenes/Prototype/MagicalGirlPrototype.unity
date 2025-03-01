@@ -425,6 +425,10 @@ PrefabInstance:
       propertyPath: groundCheck
       value: 
       objectReference: {fileID: 2106918890}
+    - target: {fileID: 1931263410887614576, guid: c8aa2adea34f18f4aa97943145c210a2, type: 3}
+      propertyPath: attackCooldown
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 2173241199431463049, guid: c8aa2adea34f18f4aa97943145c210a2, type: 3}
       propertyPath: m_LocalPosition.x
       value: -6.31
