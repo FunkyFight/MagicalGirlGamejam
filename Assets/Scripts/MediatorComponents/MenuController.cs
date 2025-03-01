@@ -46,8 +46,9 @@ public class MenuController : MonoBehaviour
         gameMediator.SetCameraSizeAndOffset(2, new Vector2(0, 1.3f));
         gameMediator.TeleportPlayerAndCameraInstantly(playerPosition.Value);
         gameMediator.SetPlayerCanMove(false);
+        gameMediator.SetPlayerSpeed(4);
 
-        gameMediator.FadeFromBlack(5f, () => {
+        GetComponent<ScreenFade>().FadeFromBlack(5f, () => {
             logoGroup.DOFade(1f, 2f).SetEase(Ease.InOutQuad)
             .OnComplete(() => {
                 canvasGroup.DOFade(1f, 3f).SetEase(Ease.InOutQuad);
