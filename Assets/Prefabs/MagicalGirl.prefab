@@ -229,7 +229,6 @@ GameObject:
   - component: {fileID: 6163134475242207079}
   - component: {fileID: 2009827267990356041}
   - component: {fileID: 1965876813750928330}
-  - component: {fileID: 6497030308322452064}
   - component: {fileID: 1931263410887614576}
   m_Layer: 0
   m_Name: MagicalGirl
@@ -430,13 +429,13 @@ MonoBehaviour:
     m_ActionName: 'Player/Look[/XInputControllerWindows/rightStick,/Mouse/delta,/Pen/delta]'
   - m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 0}
-        m_TargetAssemblyTypeName: 
-        m_MethodName: 
-        m_Mode: 1
+      - m_Target: {fileID: 1931263410887614576}
+        m_TargetAssemblyTypeName: MagicalGirlController, Assembly-CSharp
+        m_MethodName: Attack
+        m_Mode: 0
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName: 
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
           m_IntArgument: 0
           m_FloatArgument: 0
           m_StringArgument: 
@@ -448,10 +447,6 @@ MonoBehaviour:
       m_Calls: []
     m_ActionId: 852140f2-7766-474d-8707-702459ba45f3
     m_ActionName: 'Player/Interact[/Keyboard/e,/XInputControllerWindows/buttonNorth]'
-  - m_PersistentCalls:
-      m_Calls: []
-    m_ActionId: 27c5f898-bc57-4ee1-8800-db469aca5fe3
-    m_ActionName: 'Player/Crouch[/XInputControllerWindows/buttonEast,/Keyboard/c]'
   - m_PersistentCalls:
       m_Calls:
       - m_Target: {fileID: 1931263410887614576}
@@ -468,18 +463,6 @@ MonoBehaviour:
         m_CallState: 2
     m_ActionId: f1ba0d36-48eb-4cd5-b651-1c94a6531f70
     m_ActionName: 'Player/Jump[/Keyboard/space,/XInputControllerWindows/buttonSouth]'
-  - m_PersistentCalls:
-      m_Calls: []
-    m_ActionId: 2776c80d-3c14-4091-8c56-d04ced07a2b0
-    m_ActionName: 'Player/Previous[/Keyboard/1,/XInputControllerWindows/dpad/left]'
-  - m_PersistentCalls:
-      m_Calls: []
-    m_ActionId: b7230bb6-fc9b-4f52-8b25-f5e19cb2c2ba
-    m_ActionName: 'Player/Next[/Keyboard/2,/XInputControllerWindows/dpad/right]'
-  - m_PersistentCalls:
-      m_Calls: []
-    m_ActionId: 641cd816-40e6-41b4-8c3d-04687c349290
-    m_ActionName: 'Player/Sprint[/Keyboard/leftShift,/XInputControllerWindows/leftStickPress]'
   - m_PersistentCalls:
       m_Calls: []
     m_ActionId: c95b2375-e6d9-4b88-9c4c-c5e76515df4b
@@ -533,29 +516,6 @@ MonoBehaviour:
   m_DefaultActionMap: Player
   m_SplitScreenIndex: -1
   m_Camera: {fileID: 0}
---- !u!114 &6497030308322452064
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 7648592749111488730}
-  m_Enabled: 0
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: e9a9ae62a6f07d8498b8d2b1ef8cfea9, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  moveSpeed: 12
-  jumpHeight: 17
-  groundLayers:
-  - serializedVersion: 2
-    m_Bits: 8
-  groundCheck: {fileID: 6758280375578068810}
-  coyoteTime: 7
-  jumpBufferTime: 7
-  maxHalfTime: 5
-  halfGravityCoef: 0.5
-  jumpCutMultiplier: 0.5
 --- !u!114 &1931263410887614576
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -568,6 +528,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: acbc8241f4d21db4286f7c34c3f9e4a0, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  CanMove: 1
   moveSpeed: 12
   jumpHeight: 16
   groundLayers:
@@ -579,3 +540,6 @@ MonoBehaviour:
   maxHalfTime: 5
   halfGravityCoef: 0.5
   jumpCutMultiplier: 0.5
+  attackSpeed: 16
+  attackDmg: 20
+  arrow: {fileID: 7648592749111488730, guid: 328b0b74fa0109241bcc49999ae8f8c8, type: 3}
