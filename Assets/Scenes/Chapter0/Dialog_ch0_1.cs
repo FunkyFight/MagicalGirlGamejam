@@ -21,6 +21,6 @@ public class Dialog_ch0_1 : CinematicStarter
         dialogueRunner.StartDialogue("Gigi_Monologue_3");
         yield return new WaitUntil(() => !dialogueRunner.IsDialogueRunning);
 
-        gameMediator.SetPlayerSpeed(14);
+        gameMediator.SetPlayerSpeed(8);
     }
 }
