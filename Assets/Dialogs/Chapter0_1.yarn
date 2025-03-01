@@ -49,10 +49,3 @@ Gigi: No. I can’t do that to myself... If I’m gonna die, at least let it be 
 Gigi: Well... guess I’m on my own. Time to find a way out.
 ===
 
-title: Deeper
----
-Gigi: Je commence vraiment à m'enfoncer...
-Gigi: C'est tout ou rien, de toute manière il m'est impossible de remonter maintenant.
-<<spotlight 1.46 0.71 1.88>>
-<<globallight 0.15>>
-===

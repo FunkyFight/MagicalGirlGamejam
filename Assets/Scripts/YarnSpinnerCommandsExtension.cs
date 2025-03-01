@@ -33,6 +33,12 @@ public class YarnSpinnerCommandsExtension : MonoBehaviour
         DOTween.To(() => mediator.GetGlobalLight().intensity, x => mediator.GetGlobalLight().intensity = x, intensity, 1f);
     }
 
+    [YarnCommand("globallightTime")]
+    public static void GlobalLightTime(float intensity, float duration)
+    {
+        DOTween.To(() => mediator.GetGlobalLight().intensity, x => mediator.GetGlobalLight().intensity = x, intensity, duration);
+    }
+
     private static IEnumerator ApplyVelocityForDuration(Rigidbody2D controller, float xVelocity, float yVelocity, float duration)
     {
         Vector2 originalVelocity = controller.linearVelocity;

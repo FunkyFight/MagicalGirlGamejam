@@ -35,6 +35,9 @@ public class PlayerController : MonoBehaviour
     [Header("Variable Jump Height Settings")]
     [SerializeField] protected float jumpCutMultiplier = 0.5f; // Multiplie la vélocité verticale lors d'un relâchement précoce
 
+    private float lastXVelocity = 0;
+    private float lastYVelocity = 0;
+
     // Components
     protected Rigidbody2D rbody;
 
@@ -93,7 +96,7 @@ public class PlayerController : MonoBehaviour
         canActivateCoyote = false;
     }
 
-    void FixedUpdate()
+    public virtual void FixedUpdate()
     {
         CoyoteJump();
         JumpBuffer();
@@ -103,6 +106,20 @@ public class PlayerController : MonoBehaviour
         {
             isJumping = false;
             ResetCoyoteJump();
+        }
+
+        if(!IsGrounded())
+        {
+            lastXVelocity = rbody.linearVelocityX;
+            lastYVelocity = rbody.linearVelocityY;
+        }
+    }
+
+    void OnCollisionEnter2D(Collision2D collision2D)
+    {
+        if(collision2D.gameObject.CompareTag("Bouncepad"))
+        {
+            rbody.linearVelocity = new Vector2(lastXVelocity, -lastYVelocity);
         }
     }
 
