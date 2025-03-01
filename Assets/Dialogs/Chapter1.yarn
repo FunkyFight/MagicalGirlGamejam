@@ -98,7 +98,7 @@ Gigi: ce qu’il fait humide par ici…
 Gigi: et ce que ça sent mauvais !
 Gigi: je dois absolument trouver une sortie et vite !
 <<movePlayer -5 0 10>>
-<< wait 10  >>
+<<wait 10>>
 Gigi: J-j'ai peur...
 <<movePlayer -5 0 2>>
 << wait 2 >>

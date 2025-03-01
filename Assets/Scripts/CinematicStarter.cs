@@ -26,4 +26,10 @@ public abstract class CinematicStarter : MonoBehaviour {
     }
 
     protected abstract IEnumerator StartCinematic();
+
+    protected IEnumerator StartDialogAndWait(string nodeName)
+    {
+        dialogueRunner.StartDialogue(nodeName);
+        yield return new WaitUntil(() => !dialogueRunner.IsDialogueRunning);
+    }
 }

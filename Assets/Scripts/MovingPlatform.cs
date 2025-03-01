@@ -5,6 +5,7 @@ public class MovingPlatform : MonoBehaviour
 {
 
     [SerializeField] public Vector3 destination;
+    [SerializeField] public float duration = 2f;
 
 
     void OnDrawGizmos()
@@ -15,6 +16,6 @@ public class MovingPlatform : MonoBehaviour
 
     void Start()
     {
-        transform.DOMove(transform.position + destination, 2f).SetLoops(-1, LoopType.Yoyo).SetEase(Ease.InOutSine);
+        transform.DOMove(transform.position + destination, duration).SetLoops(-1, LoopType.Yoyo).SetEase(Ease.InOutSine);
     }
 }
