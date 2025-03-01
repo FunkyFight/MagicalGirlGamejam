@@ -233,4 +233,19 @@ public class PlayerManager : MonoBehaviour
 
         spriteRenderer.color = originalColor; // Ensure the color is reset to original
     }
+
+    public int GetMana() 
+    {
+        return mana;
+    }
+
+    public int GetMaxMana() 
+    {
+        return maxMana;
+    }
+
+    public void SetMana(int Mana) 
+    {
+        this.mana = Mana;
+    }
 }

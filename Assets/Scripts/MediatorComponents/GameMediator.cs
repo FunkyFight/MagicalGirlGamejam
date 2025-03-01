@@ -167,6 +167,21 @@ public class GameMediator : MonoBehaviour
         // Teleport the camera
         cameraFollow.transform.position = new Vector3(position.x, position.y, cameraFollow.transform.position.z);
     }
+
+    public int GetPlayerMana() 
+    {
+        return playerManager.GetMana();
+    }
+
+    public int GetPlayerMaxMana() 
+    {
+        return playerManager.GetMaxMana();
+    }
+
+    public void SetPlayerMana(int Mana) 
+    {
+        playerManager.SetMana(Mana);
+    }
     #endregion
 
 
@@ -285,4 +300,6 @@ public class GameMediator : MonoBehaviour
         fader.FadeFromBlack(duration, onComplete);
     }
     #endregion
+
+    
 }
