@@ -21,7 +21,7 @@ public class ScreenFade : MonoBehaviour
 
         // Create a black Image to cover the screen
         blackImage = new GameObject("BlackImage").AddComponent<Image>();
-        blackImage.color = Color.black;
+        blackImage.color = new Color(0, 0, 0);
         blackImage.rectTransform.SetParent(fadeCanvas.transform, false);
         blackImage.rectTransform.anchorMin = Vector2.zero;
         blackImage.rectTransform.anchorMax = Vector2.one;

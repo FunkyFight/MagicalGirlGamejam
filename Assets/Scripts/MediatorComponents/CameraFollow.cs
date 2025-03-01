@@ -9,18 +9,41 @@ public class CameraFollow : MonoBehaviour
     [SerializeField] public float drag;
 
     private Camera camera;
+    private Vector3? lookAtPoint = null;
 
-    // Update is called once per frame
     void Start()
     {
         camera = GetComponent<Camera>();
     }    
+
     void Update()
     {
-        if(target == null) return;
+        Vector3 newPos;
 
-        Vector3 newPos = new Vector3(target.position.x + offset.x, target.position.y + offset.y, -10);
+        if (lookAtPoint.HasValue)
+        {
+            newPos = new Vector3(lookAtPoint.Value.x + offset.x, lookAtPoint.Value.y + offset.y, -10);
+        }
+        else if (target != null)
+        {
+            newPos = new Vector3(target.position.x + offset.x, target.position.y + offset.y, -10);
+        }
+        else
+        {
+            return;
+        }
+
         transform.position = Vector3.Lerp(transform.position, newPos, drag);
         camera.orthographicSize = Mathf.Lerp(camera.orthographicSize, cameraSize, drag);
+    }
+
+    public void LookAtPoint(Vector3 point)
+    {
+        lookAtPoint = point;
+    }
+
+    public void FollowTarget()
+    {
+        lookAtPoint = null;
     }
 }

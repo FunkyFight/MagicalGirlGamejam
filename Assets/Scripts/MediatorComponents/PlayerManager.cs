@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using DG.Tweening;
 using UnityEngine;
 using UnityEngine.InputSystem;
+using UnityEngine.Rendering.Universal;
 
 public class PlayerManager : MonoBehaviour
 {
@@ -16,6 +17,8 @@ public class PlayerManager : MonoBehaviour
 
     [Header("Game Mediator")]
     [SerializeField] private GameMediator mediator;
+    
+    [SerializeField] public Light2D spotlight {get; private set;}
 
     private ParticleSystem ps;
 
@@ -72,6 +75,8 @@ public class PlayerManager : MonoBehaviour
         currentTransformationGameObject.GetComponent<PlayerDamageController>().playerManager = this;
         currentTransformationGameObject.transform.position = transform.position;
 
+        spotlight = currentTransformationGameObject.GetComponentInChildren<Light2D>();
+
         // Redéfinition des slots
         leftSlotTransformationIndex = (leftSlotTransformationIndex == characterIndex) ? currentTransformationIndex : leftSlotTransformationIndex;
         rightSlotTransformationIndex = (rightSlotTransformationIndex == characterIndex) ? currentTransformationIndex : rightSlotTransformationIndex;
@@ -126,6 +131,7 @@ public class PlayerManager : MonoBehaviour
 
         currentTransformationGameObject.transform.position = lastPlayerPos;
         currentTransformationGameObject.GetComponent<Rigidbody2D>().linearVelocity = lastVelocity;
+        spotlight = currentTransformationGameObject.GetComponentInChildren<Light2D>();
 
         // Redéfinition des slots
         if(currentTransformationIndex != 0) 

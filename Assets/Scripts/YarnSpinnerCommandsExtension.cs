@@ -1,4 +1,5 @@
 using System.Collections;
+using DG.Tweening;
 using UnityEngine;
 using Yarn.Unity;
 
@@ -16,6 +17,26 @@ public class YarnSpinnerCommandsExtension : MonoBehaviour
     {
         Rigidbody2D controller = mediator.GetPlayerController().GetComponent<Rigidbody2D>();
         mediator.StartCoroutine(ApplyVelocityForDuration(controller, xVelocity, yVelocity, duration));
+    }
+
+    [YarnCommand("spotlight")]
+    public static void Spotlight(float intensity, float outerRadius, float innerRadius)
+    {
+        DOTween.To(() => mediator.GetPlayerSpotlight().intensity, x => mediator.GetPlayerSpotlight().intensity = x, intensity, 1f);
+        DOTween.To(() => mediator.GetPlayerSpotlight().pointLightOuterRadius, x => mediator.GetPlayerSpotlight().pointLightOuterRadius = x, outerRadius, 1f);
+        DOTween.To(() => mediator.GetPlayerSpotlight().pointLightInnerRadius, x => mediator.GetPlayerSpotlight().pointLightInnerRadius = x, innerRadius, 1f);
+    }
+
+    [YarnCommand("globallight")]
+    public static void GlobalLight(float intensity)
+    {
+        DOTween.To(() => mediator.GetGlobalLight().intensity, x => mediator.GetGlobalLight().intensity = x, intensity, 1f);
+    }
+
+    [YarnCommand("globallightTime")]
+    public static void GlobalLightTime(float intensity, float duration)
+    {
+        DOTween.To(() => mediator.GetGlobalLight().intensity, x => mediator.GetGlobalLight().intensity = x, intensity, duration);
     }
 
     private static IEnumerator ApplyVelocityForDuration(Rigidbody2D controller, float xVelocity, float yVelocity, float duration)
