@@ -1,6 +1,5 @@
 using DG.Tweening;
 using UnityEngine;
-using UnityEngine.Rendering.Universal;
 
 /*
 * Gère absolument TOUTES les relations entre les différents gameobjects systèmes
@@ -13,17 +12,9 @@ public class GameMediator : MonoBehaviour
     [SerializeField] private CameraFollow cameraFollow;
     [SerializeField] private MenuController menuController;
     [SerializeField] private AudioSource musicPlayer;
-    [SerializeField] private ScreenFade fader;
-    [SerializeField] private Light2D globalLight;
 
     [Header("Settings")]
     [SerializeField] private bool startMenu = true;
-
-
-    [Header("On Start Settings")]
-    [SerializeField] private bool useStartSpeed = true;
-    [SerializeField] private float startSpeed = 14;
-    [SerializeField] private float startSpotlightIntensity = 0.28f;
     
     void Awake()
     {
@@ -34,27 +25,15 @@ public class GameMediator : MonoBehaviour
 
         if(!startMenu)
         {
+            Destroy(menuController.GetComponent<ScreenFade>().fadeCanvas.gameObject);
             Destroy(menuController.gameObject);
-            fader.canvasGroup.alpha = 0f;
             musicPlayer.Stop();
         }
-
-        
-        if(useStartSpeed) SetPlayerSpeed(startSpeed);
     }
 
 
-    public Light2D GetGlobalLight()
-    {
-        return globalLight;
-    }
 
     #region Player
-    public Light2D GetPlayerSpotlight()
-    {
-        return playerManager.spotlight;
-    }
-
     public PlayerController GetPlayerController()
     {
         if (playerManager == null)
@@ -103,16 +82,6 @@ public class GameMediator : MonoBehaviour
         playerManager.currentTransformationGameObject.GetComponent<PlayerController>().CanMove = canMove;
         
         playerManager.currentTransformationGameObject.GetComponent<Rigidbody2D>().linearVelocity = Vector2.zero;
-    }
-
-    public bool CanPlayerMove()
-    {
-        if (playerManager == null)
-        {
-            throw new System.Exception("PlayerManager is not assigned.");
-        }
-
-        return playerManager.currentTransformationGameObject.GetComponent<PlayerController>().CanMove;
     }
 
     /// <summary>
@@ -191,17 +160,6 @@ public class GameMediator : MonoBehaviour
 
     
     #region Camera
-
-    public void PointCameraTo(Vector3 pos)
-    {
-        cameraFollow.LookAtPoint(pos);
-    }
-
-    public void FollowTarget()
-    {
-        cameraFollow.FollowTarget();
-    }
-
     /// <summary>
     /// Sets the camera size and offset.
     /// </summary>
@@ -275,29 +233,43 @@ public class GameMediator : MonoBehaviour
     /// <param name="onComplete">Action to perform when the fade is complete.</param>
     public void FadeToBlack(float duration, System.Action onComplete = null)
     {
-        if (fader == null)
+        if (menuController == null)
         {
-            Debug.LogWarning("ScreenFade (fader) is not assigned.");
+            Debug.LogWarning("MenuController is not assigned.");
             return;
         }
 
-        fader.FadeToBlack(duration, onComplete);
+        ScreenFade screenFade = menuController.GetComponent<ScreenFade>();
+        if (screenFade == null)
+        {
+            Debug.LogWarning("ScreenFade component is not found on MenuController.");
+            return;
+        }
+
+        screenFade.FadeToBlack(duration, onComplete);
     }
 
     /// <summary>
-    /// Fades the screen from black using the ScreenFade component.
+    /// Fades the screen from black using the ScreenFade component on the MenuController.
     /// </summary>
     /// <param name="duration">The duration over which the fade occurs.</param>
     /// <param name="onComplete">Action to perform when the fade is complete.</param>
     public void FadeFromBlack(float duration, System.Action onComplete = null)
     {
-        if (fader == null)
+        if (menuController == null)
         {
-            Debug.LogWarning("ScreenFade (fader) is not assigned.");
+            Debug.LogWarning("MenuController is not assigned.");
             return;
         }
 
-        fader.FadeFromBlack(duration, onComplete);
+        ScreenFade screenFade = menuController.GetComponent<ScreenFade>();
+        if (screenFade == null)
+        {
+            Debug.LogWarning("ScreenFade component is not found on MenuController.");
+            return;
+        }
+
+        screenFade.FadeFromBlack(duration, onComplete);
     }
     #endregion
 

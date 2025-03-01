@@ -4,7 +4,6 @@
 TagManager:
   serializedVersion: 3
   tags:
-  - Bouncepad
   - Attack
   - Mob
   layers:
@@ -43,9 +42,6 @@ TagManager:
   m_SortingLayers:
   - name: Default
     uniqueID: 0
-    locked: 0
-  - name: PlayerLight
-    uniqueID: 1022024341
     locked: 0
   m_RenderingLayers:
   - Default

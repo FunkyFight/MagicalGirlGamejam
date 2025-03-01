@@ -11,8 +11,6 @@ public abstract class CinematicStarter : MonoBehaviour {
     
     void OnTriggerEnter2D(Collider2D collision)
     {
-        if(collision.gameObject.GetComponent<PlayerController>() == null) return;
-
         GetComponent<BoxCollider2D>().enabled = false;
         gameMediator.SetPlayerCanMove(false);
         StartCoroutine(WaitForCinematicToEnd());
