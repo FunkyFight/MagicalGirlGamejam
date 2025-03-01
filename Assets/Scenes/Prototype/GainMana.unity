@@ -30094,7 +30094,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   reparitionTemps: 5
-  gameMediator: {fileID: 0}
+  gameMediator: {fileID: 1821118137}
 --- !u!1660057539 &9223372036854775807
 SceneRoots:
   m_ObjectHideFlags: 0
