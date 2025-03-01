@@ -15,6 +15,12 @@ public class MagicalGirlController : PlayerController
     [Header("Arrow")]
     [SerializeField] private GameObject arrow;
 
+    [Header("Attack Cooldown")]
+    [SerializeField] private float attackCooldown = 1f;
+    private bool isAttacking = false;
+
+    [SerializeField] private float attackWaitingTime = 0f;
+
     void Start()
     {
         rbody = GetComponent<Rigidbody2D>();
@@ -72,6 +78,15 @@ public class MagicalGirlController : PlayerController
 
     void FixedUpdate()
     {
+        if(isAttacking)
+        {
+        attackWaitingTime += Time.deltaTime;
+        if(attackWaitingTime >= attackCooldown) {
+            isAttacking = false;
+            attackWaitingTime = 0f;
+            }
+        }
+        
         CoyoteJump();
         JumpBuffer();
         HalfJumpGravityPeak();
@@ -177,11 +192,15 @@ public class MagicalGirlController : PlayerController
 
     public void Attack(InputAction.CallbackContext context)
     {
+        if(isAttacking) return;
+
         if(context.phase != InputActionPhase.Started) return;
         
+        isAttacking = true; 
         GameObject arrowObj = Instantiate(arrow);
         arrowObj.transform.position = new Vector2(transform.position.x + 1f * transform.localScale.x, transform.position.y);
         ArrowProjectile arrowComp = arrowObj.GetComponent<ArrowProjectile>();
         arrowComp.Direction = Mathf.FloorToInt(transform.localScale.x);
     }
+
 }
