@@ -38,7 +38,7 @@ public class GameMediator : MonoBehaviour
     {
         if (playerManager == null)
         {
-            Debug.LogWarning("PlayerManager is not assigned.");
+            Debug.LogWarning("PlayerManager is not assigned!");
             return null;
         }
 
